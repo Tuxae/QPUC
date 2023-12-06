@@ -82,4 +82,3 @@ class SuperArduino:
 
         
 
-SuperArduino(port="com4")
