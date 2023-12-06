@@ -1,14 +1,13 @@
 import pygame
 import pygame.gfxdraw
+import constants
+from buzzer import SuperArduino
 
 # Initialize Pygame
 pygame.init()
-
-# Constants for colors
-GOLD_RGB = (255, 215, 0)
-BLUE_RGB = (0, 0, 255)
-SEASHELL_RGB = (255, 245, 238)
-GRAY_RGB = (169, 169, 169)  # Gray color
+super_arduino = SuperArduino()
+super_arduino.get_winner() # None ou valeur entre 0 et 3, si buzzer quelconque éteint alors get_winner() va les rallumer, et pour éviter ca on peut faire turn_on = False en paramètre de get_winner()
+# Si on veut pas qu'il emmmete de son on peut faire play_sound = False en paramètre de get_winner()                                    
 
 # Initialize the font module after Pygame initialization
 GAME_FONT = pygame.font.Font(None, 36)
@@ -60,15 +59,27 @@ def draw_scores(screen, scores, selected_item, x=0, y=0):
             (125 - bx, start_y + 25 + y_offset), (100, start_y + 50 - by + y_offset),
             (50, start_y + 50 - by + y_offset), (25 + bx, start_y + 25 + y_offset), (50, start_y + by + y_offset))
         )
-
+        
         # Draw Score Text
         text_surface = GAME_FONT.render(str(val), False, SEASHELL_RGB)
-        screen.blit(text_surface, (75 - 18 / 2, start_y + 2 + y_offset))
+        screen.blit(text_surface, (75 - 18 / 2, start_y + 10 + y_offset))
 
     # Draw the name of the selected menu item at the bottom
-    text_surface = BOLD_FONT.render(selected_item, True, (0, 0, 0))
-    text_rect = text_surface.get_rect(center=(W // 2, H - 100))
-    screen.blit(text_surface, text_rect)
+    is_last_menu = selected_index == len(menu_items) - 1
+    i = selected_index
+    rect_height = max_text_height
+    start_menu_y = 1000 
+    rect_top = start_menu_y 
+    rect_color = (255, 190, 0) # Adjust brightness to 80%
+    rect_border_color = (255, 190, 0)
+    draw_rounded_rect(screen, pygame.Rect(1920 // 2 - max_text_width // 2, rect_top, max_text_width, rect_height),
+                        rect_color, rect_border_color, 20)
+
+    font = BOLD_FONT if selected_items[i] else GAME_FONT
+    text_color = (255, 255, 255)
+    outline_color = (0, 0, 0)
+    item = "Attaque et défense chez les animaux" if i == len(menu_items) - 1 else menu_items[i]
+    draw_outlined_text(font, item, text_color, outline_color, (W // 2, rect_top + rect_height // 2))
 
 
 def adjust_brightness(color, factor):
@@ -87,7 +98,7 @@ selected_items = [False, False, False, False]
 
 # Scores for each polygon
 scores = [4, 3, 2, 1]
-
+selected_index = 0
 # Game loop
 menu_screen = True
 running = True
@@ -99,6 +110,7 @@ while running:
             if menu_screen:
                 if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
                     index = event.key - pygame.K_1
+                    selected_index = index
                     selected_items[index] = not selected_items[index]  # Toggle the selected state
                     menu_screen = False
             elif event.key == pygame.K_ESCAPE:
@@ -119,8 +131,8 @@ while running:
             start_menu_y = (1080 - len(menu_items) * rect_height - (len(menu_items) - 1) * vertical_gap) // 2
 
             rect_top = start_menu_y + i * (rect_height + vertical_gap)
-            rect_color = adjust_brightness((50, 205, 50) if is_last_menu else (255, 228, 54), 0.8) if selected_items[i] else ((50, 205, 50) if is_last_menu else (255, 228, 54))  # Adjust brightness to 80%
-            rect_border_color = adjust_brightness((50, 205, 50) if is_last_menu else (255, 228, 54), 0.8) if selected_items[i] else ((50, 205, 50) if is_last_menu else (255, 228, 54))
+            rect_color = adjust_brightness((50, 205, 50) if is_last_menu else (255, 190, 0), 0.8) if selected_items[i] else ((50, 205, 50) if is_last_menu else (255, 190, 0))  # Adjust brightness to 80%
+            rect_border_color = adjust_brightness((50, 205, 50) if is_last_menu else (255, 190, 0), 0.8) if selected_items[i] else ((50, 205, 50) if is_last_menu else (255, 190, 0))
 
             draw_rounded_rect(screen, pygame.Rect(1920 // 2 - max_text_width // 2, rect_top, max_text_width, rect_height),
                               rect_color, rect_border_color, 20)
