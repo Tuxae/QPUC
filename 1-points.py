@@ -53,7 +53,7 @@ def draw_player_zone(screen, i=0):
         )
     )
     draw_hexagon(screen, 
-                 PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG))
+                 0, 0)
 
 def draw_score(screen, x=0, y=0, val=0):
 
