@@ -1,6 +1,7 @@
 from pyfirmata import Arduino, util
 import numpy as np
-from playsound import playsound
+"from playsound import playsound"
+from pygame import mixer
 import time
 
 class Buzzer:
@@ -44,13 +45,15 @@ class SuperArduino:
     def __init__(self, port="/dev/ttyACM0"):
         self.port = port
         self.board = Arduino(port)
+        it = util.Iterator(self.board)
+        it.start()        
         self.list_buzzer = [
             Buzzer(4+i, 8+i, 0+i, self.board, f"buzzer {i}") \
                 for i in range(4) 
         ]
-        it = util.Iterator(self.board)
-        it.start()
-        
+        mixer.init()
+        mixer.music.load("sounds/buzzer1.wav")
+
     def get_value(self, turn_on=True):
         if turn_on:
             for i in range(4):
@@ -74,7 +77,7 @@ class SuperArduino:
             return None
         else:
             if play_sound:
-                playsound('sounds/buzzer1.wav', block=False)
+                mixer.music.play()
             return np.argmax(liste)
 
         
