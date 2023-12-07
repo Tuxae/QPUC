@@ -1,18 +1,21 @@
 import pygame
 import pygame.gfxdraw
 from constants import *
-from buzzer import SuperArduino
 
 # Initialize Pygame
 pygame.init()
-#super_arduino = SuperArduino()
-#super_arduino.get_winner() # None ou valeur entre 0 et 3, si buzzer quelconque éteint alors get_winner() va les rallumer, et pour éviter ca on peut faire turn_on = False en paramètre de get_winner()
-# Si on veut pas qu'il emmmete de son on peut faire play_sound = False en paramètre de get_winner()                                    
-
+W = 1920
+H = 1080
 # Initialize the font module after Pygame initialization
+TITTLE_FONT = pygame.font.SysFont('Comic Sans MS', H//12)
 GAME_FONT = pygame.font.Font(None, 36)
 BOLD_FONT = pygame.font.Font(None, 36)
 BOLD_FONT.set_bold(True)  # Set the font to bold
+
+def write_title(screen, title, y_pos):
+    text_qpuc = TITTLE_FONT.render(title, False, SEASHELL_RGB)
+    text_rect = text_qpuc.get_rect(center=(W/2, y_pos))
+    screen.blit(text_qpuc, text_rect)
 
 def draw_rounded_rect(screen, rect, color, border_color, border_radius):
     pygame.gfxdraw.box(screen, rect, color)
@@ -83,8 +86,6 @@ def adjust_brightness(color, factor):
     return tuple(int(min(max(0, c * factor), 255)) for c in color)
 
 # Set up the display
-W = 1920
-H = 1080
 screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN)
 pygame.display.set_caption('Menu and Polygons Screen')
 
@@ -95,9 +96,7 @@ selected_items = [False, False, False, False]
 # Scores for each polygon
 scores = [4, 3, 2, 1, 0]
 selected_index = 0
-# Initialize current polygon index
-current_polygon_index = len(scores) - 1
-border_index = 0
+
 
 # Game loop
 menu_screen = True
@@ -113,6 +112,9 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if menu_screen:
+                # Initialize current polygon index
+                current_polygon_index = len(scores) - 1
+                border_index = 0
                 if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
                     index = event.key - pygame.K_1
                     selected_index = index
@@ -133,13 +135,14 @@ while running:
                         if current_polygon_index < len(scores) - 1:
                             current_polygon_index = len(scores) - 1
 
-            elif event.key == pygame.K_ESCAPE:
-                # Go back to the menu screen if Escape is pressed
-                menu_screen = True
-
+                    elif event.key == pygame.K_ESCAPE:
+                        # Go back to the menu screen if Escape is pressed
+                        menu_screen = True
+                        timer_active = False
     # Clear the screen
     screen.fill(BLUE_RGB)
-
+    write_title(screen, "Question pour un champion", (H//12)/2)
+    write_title(screen, "Quatre à la suite", 3*(H//12)/2)
     if menu_screen:
         max_text_width = max(GAME_FONT.size(item)[0] for item in menu_items) + 500
         max_text_height = GAME_FONT.size(max(menu_items, key=len))[1] + 20
