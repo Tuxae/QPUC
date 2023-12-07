@@ -1,4 +1,3 @@
-
 # Colors
 BLUE = "#01399D"
 GOLD = "#FAD315"
@@ -16,3 +15,4 @@ GOLD_RGB = hex_to_rgb(GOLD)
 PINK_RGB = hex_to_rgb(PINK)
 POWDER_RGB = hex_to_rgb(POWDER)
 SEASHELL_RGB = hex_to_rgb(SEASHELL)
+GREEN_RGB = hex_to_rgb(GREEN)
