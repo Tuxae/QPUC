@@ -9,6 +9,7 @@ H = 1080
 # Initialize the font module after Pygame initialization
 TITTLE_FONT = pygame.font.SysFont('Comic Sans MS', H//12)
 GAME_FONT = pygame.font.Font(None, 36)
+TEXT_FONT = pygame.font.Font(None, 54)
 BOLD_FONT = pygame.font.Font(None, 36)
 BOLD_FONT.set_bold(True)  # Set the font to bold
 
@@ -48,7 +49,7 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
                    (100, 50), (50, 50), (25, 25), (50, 0)]]
 
         # Fill color is GREEN_RGB for the selected polygon and POWDER_RGB for others
-        fill_color = GREEN_RGB if i == current_polygon_index else POWDER_RGB
+        fill_color = GREEN_RGB if i == current_polygon_index else BLUE_RGB
 
         # Border color logic
         if score > border_index:
@@ -59,7 +60,7 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
         pygame.draw.polygon(screen, fill_color, points)
         pygame.draw.lines(screen, border_color, True, points, 10)  # 10 is the border thickness
 
-        text_surface = GAME_FONT.render(str(score), False, SEASHELL_RGB)
+        text_surface = TEXT_FONT.render(str(score), False, SEASHELL_RGB)
         text_rect = text_surface.get_rect(center=(75 * polygon_size, y_offset + 25 * polygon_size))
         screen.blit(text_surface, text_rect)
 
