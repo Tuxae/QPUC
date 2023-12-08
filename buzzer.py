@@ -28,14 +28,15 @@ class Buzzer:
     
     def turn_on_buzzer(self, value=True):
         self.buzzer_is_on = value
-        self.board.digital[self.out_pin] = int(value)
+        self.board.digital[self.out_pin].write(int(value))
         light = self.light_is_on and not value
         self.light_is_on = light
-        self.board.digital[self.out_pin] = int(light)
+        self.board.digital[self.sig_pin].write(int(light))
 
     def turn_on_light(self, value=True):
+        print(f"Turn on light {self.name}")
         self.light_is_on = value
-        self.board.digital[self.out_pin] = int(value)
+        self.board.digital[self.sig_pin].write(int(value))
     
 
 
@@ -48,11 +49,13 @@ class SuperArduino:
         it = util.Iterator(self.board)
         it.start()        
         self.list_buzzer = [
-            Buzzer(4+i, 8+i, 0+i, self.board, f"buzzer {i}") \
-                for i in range(4) 
+            Buzzer(4,  8, 0, self.board, f"Buzzer {0}"),
+            Buzzer(5,  9, 1, self.board, f"Buzzer {1}"),
+            Buzzer(6, 11, 2, self.board, f"Buzzer {2}"),
+            Buzzer(7, 10, 3, self.board, f"Buzzer {3}")
         ]
         mixer.init()
-        mixer.music.load("sounds/buzzer1.wav")
+        mixer.music.load("sounds/buzzer_bip_qpuc.wav")
 
     def get_value(self, turn_on=True):
         if turn_on:
@@ -60,7 +63,7 @@ class SuperArduino:
                 buzzer = self.list_buzzer[i]
                 buzzer.turn_on_buzzer()
 
-        liste = [self.list_buzzer[i].get_analogs_value() for i in range(4)]
+        liste = [self.list_buzzer[i].get_analog_value() for i in range(4)]
         return liste
 
     def turn_on_buzzer(self, liste=[True, True, True, True]):
@@ -73,7 +76,7 @@ class SuperArduino:
 
     def get_winner(self, turn_on=True, play_sound=True):
         liste = self.get_value(turn_on)
-        if max(liste) < 0.5:
+        if max(liste) < 0.4:
             return None
         else:
             if play_sound:

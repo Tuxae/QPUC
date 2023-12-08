@@ -1,10 +1,12 @@
-import pygame
+import pygame, time
 from constants import * 
+from buzzer import SuperArduino
 
 """
 Ceci est le code pour le 9 points gagnants
 
 """
+super_arduino = SuperArduino('/dev/ttyACM1')
 
 successes, failures = pygame.init()
 print("{0} successes and {1} failures".format(successes, failures))
@@ -119,17 +121,27 @@ def draw_score(screen, i, val=0):
     screen.blit(text_qpuc, text_rect)
 
 liste_score = [0, 0, 0, 0]
+liste_on = [True, True, True, True]
+on_game = True
 screen.fill(BLUE_RGB)
 
 write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
 write_title(screen, "9 points gagnants", 3*TITLE_SIZE/2)
-draw_player_zone(screen, i=0)
-draw_player_zone(screen, i=1)
-draw_player_zone(screen, i=2)
-draw_player_zone(screen, i=3)
+
+for i in range(4):
+    draw_player_zone(screen, i=i)
+    draw_score(screen, i, val=liste_score[i])
 
 while True:
     clock.tick(FPS)
+    if on_game:
+        res = super_arduino.get_winner()
+        if res is not None:
+            liste = [False for i in range(4)]
+            liste[res] = True
+            print(res, liste)
+            super_arduino.turn_on_buzzer(liste)
+            on_game = False
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -151,9 +163,17 @@ while True:
                 liste_score[2] -= 1
             if event.key == pygame.K_f:
                 liste_score[3] -= 1
+            if event.key == pygame.K_q:
+                liste_score[0] -= 1
+            if event.key == pygame.K_s:
+                liste_score[1] -= 1
+            if event.key == pygame.K_d:
+                liste_score[2] -= 1
+            if event.key == pygame.K_f:
+                liste_score[3] -= 1
             if event.key == pygame.K_ESCAPE:
                 quit()
     
-    for i in range(4):
-        draw_score(screen, i, val=liste_score[i])
+            for i in range(4):
+                draw_score(screen, i, val=liste_score[i])
     pygame.display.update()  # Or pygame.display.flip()
