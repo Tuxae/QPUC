@@ -60,7 +60,7 @@ class SuperArduino:
                 buzzer = self.list_buzzer[i]
                 buzzer.turn_on_buzzer()
 
-        liste = [self.list_buzzer[i].get_analog_value() for i in range(4)]
+        liste = [self.list_buzzer[i].get_analogs_value() for i in range(4)]
         return liste
 
     def turn_on_buzzer(self, liste=[True, True, True, True]):

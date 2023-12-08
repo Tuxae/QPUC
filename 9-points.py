@@ -34,38 +34,76 @@ def write_title(screen, title, y_pos):
     text_rect = text_qpuc.get_rect(center=(W/2, y_pos))
     screen.blit(text_qpuc, text_rect)
 
-def draw_hexagon(screen, x, y, width=0, height=0):
+def draw_hexagon(screen, x, y, color=GOLD_RGB, width=100):
+    # height = width / 2
+    width_scale = width/100
+    height_scale = width/100
     pygame.draw.polygon(
         screen, 
-        GOLD_RGB, 
-        ((x+65, y+350), (x+115, y+350), (x+140, y+375), (x+115, y+400), (x+65, y+400), (x+40, y+375), (x+65, y+350))
+        color, 
+        (
+            (x-25*width_scale, y+0), 
+            (x+25*width_scale, y+0), 
+            (x+50*width_scale, y+25*height_scale), 
+            (x+25*width_scale, y+50*height_scale), 
+            (x-25*width_scale, y+50*height_scale), 
+            (x-50*width_scale, y+25*height_scale), 
+            (x-25*width_scale, y+0)
+        )
     )
 
 def draw_player_zone(screen, i=0):
+    rectangle_height = H-5*TITLE_SIZE/2-2*PLAYER_BORDER
+    pygame.draw.rect(
+        screen, 
+        GOLD_RGB, 
+        pygame.Rect(
+            PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG), 
+            5*TITLE_SIZE/2, 
+            PLAYER_LONG, 
+            rectangle_height
+        )
+    )
     pygame.draw.rect(
         screen, 
         POWDER, 
         pygame.Rect(
             PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG), 
-            5*TITLE_SIZE/2, 
+            5*TITLE_SIZE/2+rectangle_height*0.01, 
             PLAYER_LONG, 
-            H-5*TITLE_SIZE/2-PLAYER_BORDER
+            rectangle_height*0.98
         )
     )
-    draw_hexagon(screen, 
-                 0, 0)
-
-def draw_score(screen, x=0, y=0, val=0):
-
-    bx = 6 # Border
-    by = 4 # Border
-    pygame.draw.polygon(
+    hexagon_width = W/10
+    draw_hexagon(
         screen, 
-        BLUE_RGB, 
-        ((x+65, y+350+by), (x+115, y+350+by), (x+140-bx, y+375), (x+115, y+400-by), (x+65, y+400-by), (x+40+bx, y+375), (x+65, y+350+by))
+        PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2, 
+        H-2*PLAYER_BORDER-hexagon_width,
+        GOLD_RGB,
+        width=hexagon_width
     )
-    text_surface = GAME_FONT.render(str(val), False, SEASHELL_RGB)
-    screen.blit(text_surface, (x+90-18/2, y+352))
+    draw_hexagon(
+        screen, 
+        PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2, 
+        H-2*PLAYER_BORDER-hexagon_width*0.96,
+        SEASHELL_RGB,
+        width=hexagon_width*0.84
+    )
+    draw_hexagon(
+        screen, 
+        PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2, 
+        H-2*PLAYER_BORDER-hexagon_width*0.95,
+        BLUE_RGB,
+        width=hexagon_width*0.8
+    )
+
+def draw_score(screen, i, val=0):
+    x = PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2
+    hexagon_width = W/10
+    y = H-2*PLAYER_BORDER-hexagon_width
+    text_qpuc = GAME_FONT.render(str(val), False, SEASHELL_RGB)
+    text_rect = text_qpuc.get_rect(center=(x, y))
+    screen.blit(text_qpuc, text_rect)
 
 liste_score = []
 screen.fill(BLUE_RGB)
@@ -76,6 +114,8 @@ draw_player_zone(screen, i=0)
 draw_player_zone(screen, i=1)
 draw_player_zone(screen, i=2)
 draw_player_zone(screen, i=3)
+for i in range(4):
+    draw_score(screen, i, val=0)
 
 while True:
     clock.tick(FPS)
