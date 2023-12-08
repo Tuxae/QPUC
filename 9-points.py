@@ -97,17 +97,13 @@ def draw_player_zone(screen, i=0):
         width=hexagon_width*0.8
     )
 
-def draw_score(screen, x=0, y=0, val=0):
-
-    bx = 6 # Border
-    by = 4 # Border
-    pygame.draw.polygon(
-        screen, 
-        BLUE_RGB, 
-        ((x+65, y+350+by), (x+115, y+350+by), (x+140-bx, y+375), (x+115, y+400-by), (x+65, y+400-by), (x+40+bx, y+375), (x+65, y+350+by))
-    )
-    text_surface = GAME_FONT.render(str(val), False, SEASHELL_RGB)
-    screen.blit(text_surface, (x+90-18/2, y+352))
+def draw_score(screen, i, val=0):
+    x = PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2
+    hexagon_width = W/10
+    y = H-2*PLAYER_BORDER-hexagon_width
+    text_qpuc = GAME_FONT.render(str(val), False, SEASHELL_RGB)
+    text_rect = text_qpuc.get_rect(center=(x, y))
+    screen.blit(text_qpuc, text_rect)
 
 liste_score = []
 screen.fill(BLUE_RGB)
@@ -118,6 +114,8 @@ draw_player_zone(screen, i=0)
 draw_player_zone(screen, i=1)
 draw_player_zone(screen, i=2)
 draw_player_zone(screen, i=3)
+for i in range(4):
+    draw_score(screen, i, val=0)
 
 while True:
     clock.tick(FPS)
