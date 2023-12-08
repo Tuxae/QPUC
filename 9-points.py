@@ -121,7 +121,7 @@ def draw_score(screen, i, val=0):
 liste_score = [0, 0, 0, 0]
 screen.fill(BLUE_RGB)
 
-write_title(screen, "Question pour un champion", TITLE_SIZE/2)
+write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
 write_title(screen, "9 points gagnants", 3*TITLE_SIZE/2)
 draw_player_zone(screen, i=0)
 draw_player_zone(screen, i=1)
