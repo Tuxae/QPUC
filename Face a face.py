@@ -14,7 +14,7 @@ H = 1080
 TITLE_SIZE = H//12
 
 GAME_FONT = pygame.font.SysFont('Comic Sans MS', TITLE_SIZE)
-screen = pygame.display.set_mode((W, H))
+screen = pygame.display.set_mode((W, H),pygame.FULLSCREEN)
 PLAYER_BORDER = H*0.06
 PLAYER_LONG = (W - 5*PLAYER_BORDER)/4
 clock = pygame.time.Clock()
@@ -43,8 +43,7 @@ def draw_player_zone(screen, i=0):
             H-5*TITLE_SIZE/2-PLAYER_BORDER
         )
     )
-    draw_hexagon(screen, 
-                 PLAYER_BORDER + i*(PLAYER_BORDER+PLAYER_LONG) + PLAYER_LONG//4 + 10, H - 500)
+    draw_hexagon(screen, PLAYER_BORDER + i*(PLAYER_BORDER+PLAYER_LONG) + PLAYER_LONG//4 + 10, H - 500)
 
 def draw_score(screen, x=0, y=0, val=0):
 
