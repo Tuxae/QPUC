@@ -74,6 +74,21 @@ def draw_player_zone(screen, i=0):
             rectangle_height*0.98
         )
     )
+    angle = 0
+    target_width = PLAYER_LONG-1*PLAYER_BORDER
+    img = pygame.image.load("images/test.jpg").convert()
+    rect = img.get_rect()
+    scale = target_width / rect.width
+    img = pygame.transform.rotozoom(img, angle, scale)
+    screen.blit(
+        img, 
+        (
+            1.5*PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG), 
+            5*TITLE_SIZE/2+0.5*PLAYER_BORDER
+        )
+    )
+
+def draw_score(screen, i, val=0):
     hexagon_width = W/10
     draw_hexagon(
         screen, 
@@ -96,16 +111,14 @@ def draw_player_zone(screen, i=0):
         BLUE_RGB,
         width=hexagon_width*0.8
     )
-
-def draw_score(screen, i, val=0):
     x = PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2
     hexagon_width = W/10
-    y = H-2*PLAYER_BORDER-hexagon_width
+    y = H-2*PLAYER_BORDER-3*hexagon_width/4
     text_qpuc = GAME_FONT.render(str(val), False, SEASHELL_RGB)
     text_rect = text_qpuc.get_rect(center=(x, y))
     screen.blit(text_qpuc, text_rect)
 
-liste_score = []
+liste_score = [0, 0, 0, 0]
 screen.fill(BLUE_RGB)
 
 write_title(screen, "Question pour un champion", TITLE_SIZE/2)
@@ -114,8 +127,6 @@ draw_player_zone(screen, i=0)
 draw_player_zone(screen, i=1)
 draw_player_zone(screen, i=2)
 draw_player_zone(screen, i=3)
-for i in range(4):
-    draw_score(screen, i, val=0)
 
 while True:
     clock.tick(FPS)
@@ -124,8 +135,25 @@ while True:
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
-                pass
+            if event.key == pygame.K_a:
+                liste_score[0] += 1
+            if event.key == pygame.K_z:
+                liste_score[1] += 1
+            if event.key == pygame.K_e:
+                liste_score[2] += 1
+            if event.key == pygame.K_r:
+                liste_score[3] += 1
+            if event.key == pygame.K_q:
+                liste_score[0] -= 1
+            if event.key == pygame.K_s:
+                liste_score[1] -= 1
+            if event.key == pygame.K_d:
+                liste_score[2] -= 1
+            if event.key == pygame.K_f:
+                liste_score[3] -= 1
             if event.key == pygame.K_ESCAPE:
                 quit()
+    
+    for i in range(4):
+        draw_score(screen, i, val=liste_score[i])
     pygame.display.update()  # Or pygame.display.flip()
