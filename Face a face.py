@@ -2,7 +2,7 @@ import pygame
 import pygame.gfxdraw
 from constants import *
 from buzzer import SuperArduino
-
+import math
 # Initialize Pygame
 pygame.init()
 #super_arduino = SuperArduino()
@@ -14,11 +14,11 @@ H = 1080
 TITLE_SIZE = H//12
 
 GAME_FONT = pygame.font.SysFont('Comic Sans MS', TITLE_SIZE)
-TEXT_FONT = pygame.font.Font(None, 54)
+TEXT_FONT = pygame.font.Font(None, 60)
 BOLD_FONT = pygame.font.Font(None, 36)
 BOLD_FONT.set_bold(True)  # Set the font to bold
 
-screen = pygame.display.set_mode((W, H))
+screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN)
 PLAYER_BORDER = H*0.06
 PLAYER_LONG = (W - 5*PLAYER_BORDER)/4
 clock = pygame.time.Clock()
@@ -35,6 +35,61 @@ def draw_hexagon(screen, x, y, width=0, height=0):
         GOLD_RGB, 
         ((x+65, y+350), (x+115, y+350), (x+140, y+375), (x+115, y+400), (x+65, y+400), (x+40, y+375), (x+65, y+350))
     )
+
+def draw_polygon(screen, x, y, polygon_size, polygon_colour):
+    """
+    Draws a polygon centered at (x, y) with a size of 'polygon_size' and filled with 'polygon_colour'.
+    
+    :param screen: Pygame screen where to draw the polygon.
+    :param x: X-coordinate of the center of the polygon.
+    :param y: Y-coordinate of the center of the polygon.
+    :param polygon_size: Size of the polygon (diameter for circumscribed circle).
+    :param polygon_colour: Color to fill the polygon.
+    """
+    # Number of sides for the polygon, can be changed to create different shapes
+    num_sides = 6
+
+    # Calculating the points of the polygon
+    points = []
+    for i in range(num_sides):
+        angle = 2 * math.pi * i / num_sides
+        point_x = x + polygon_size * math.cos(angle)
+        point_y = y + polygon_size * math.sin(angle)
+        points.append((point_x, point_y))
+
+    # Drawing the polygon
+    pygame.draw.polygon(screen, polygon_colour, points)
+
+def fill_polygon(screen, x, y, polygon_size, polygon_colour, fill_percentage):
+    """
+    Fills a percentage of a hexagon polygon vertically.
+
+    :param screen: Pygame screen where to draw.
+    :param x: X-coordinate of the center of the polygon.
+    :param y: Y-coordinate of the center of the polygon.
+    :param polygon_size: Size of the polygon (diameter for circumscribed circle).
+    :param polygon_colour: Color to fill the polygon.
+    :param fill_percentage: Percentage of the polygon to fill.
+    """
+    num_sides = 6
+    angle = math.pi / num_sides
+    height = 2 * (polygon_size * math.cos(angle))
+    fill_height = height * (fill_percentage / 100)
+
+    # Calculating the bottom y-coordinate of the filled area
+    fill_bottom_y = y + height / 2
+    fill_top_y = fill_bottom_y - fill_height
+
+    # Points for the filled area
+    fill_points = [
+        (x - polygon_size / 2, fill_bottom_y),
+        (x - polygon_size / 2, fill_top_y),
+        (x + polygon_size / 2, fill_top_y),
+        (x + polygon_size / 2, fill_bottom_y)
+    ]
+
+    # Draw the filled area
+    pygame.draw.polygon(screen, polygon_colour, fill_points)
 
 def draw_player_zone(screen, score, i=0):
     pygame.draw.rect(
@@ -104,12 +159,12 @@ write_title(screen, "Question pour un champion", TITLE_SIZE/2)
 write_title(screen, "Face à face", 3*TITLE_SIZE/2)
 
 score = [0, 0]
-points = [1, 2, 3, 4]
+points = [4, 3, 2, 1]
 
 timer_active = False
 timer_start = 0
 timer_duration = 20  # Duration of the timer in seconds
-middle = 0
+left = True
 while True:
     clock.tick(FPS)
 
@@ -118,49 +173,96 @@ while True:
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                timer_active = False
             if event.key == pygame.K_i and not timer_active:
                     timer_start = current_time
                     timer_active = True
+            if event.key == pygame.K_q:
+                    left = True
+            if event.key == pygame.K_d:
+                    left = False
+
             if timer_active:
-                if event.key == pygame.K_ESCAPE:
-                    middle = 0
-                if event.key == pygame.K_q:
-                    middle = -1
-                if event.key == pygame.K_d:
-                    middle = 1
 
-                if middle == 0:
-                    for i, point in enumerate(points):
-                            polygon_size = 2
-                            polygon_spacing = 60 * polygon_size
-                            total_height = len(points) * polygon_spacing
-                            start_y = (H - total_height) // 2
-                            y_offset = start_y + i * polygon_spacing
-
-                            p = [(x * polygon_size, y * polygon_size + y_offset) for x, y in
-                                    [(H//2 - 50, 0), ( H//2, 0), (25 + H//2, 25),
-                                    ( H//2, 50), (H//2 -50, 50), (H//2-75, 25), (H//2-50, 0)]]
-                            # Fill color is GREEN_RGB for the selected polygon and POWDER_RGB for others
-                            fill_color = BLUE_RGB
-                            border_color = GOLD_RGB
-                            pygame.draw.polygon(screen, fill_color, p)
-                            pygame.draw.lines(screen, border_color, True, p, 10)  # 10 is the border thickness
-                            text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
-                            text_rect = text_surface.get_rect(center=(75 * polygon_size, y_offset + 25 * polygon_size))
-                            screen.blit(text_surface, text_rect)
+                if left:
                     if event.key == pygame.K_a:
-
-                        score[0] += 1
+                        score[0] += -1
                     elif event.key == pygame.K_z:
                         left = False
-                else:
+                elif not left:
                     if event.key == pygame.K_a:
                         score[1] += 1
                     elif event.key == pygame.K_z:
                         left = True
+
     draw_player_zone(screen, score[0], i=0)
     draw_player_zone(screen, score[1], i=3)
-    
+    if not timer_active:
+            screen.fill(BLUE_RGB)
+            write_title(screen, "Question pour un champion", TITLE_SIZE/2)
+            write_title(screen, "Face à face", 3*TITLE_SIZE/2)
+            draw_player_zone(screen, score[0], i=0)
+            draw_player_zone(screen, score[1], i=3)
+            for i, point in enumerate(points):
+                    polygon_size = 100
+                    polygon_height = 2 *(polygon_size * math.sin(math.pi / 6))
+                    polygon_spacing = polygon_height + 100
+                    total_height = len(points) * polygon_spacing
+                    start_y = (H - total_height) // 2 + 250
+                    y_offset = start_y + i * polygon_spacing
+                    
+                    fill_color = ORANGE_RGB
+                    border_color = GOLD_RGB
+                    draw_polygon(screen, W//2, y_offset, polygon_size, border_color)
+                    draw_polygon(screen, W//2, y_offset, polygon_size - 15, fill_color)
+                    text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
+                    text_rect = text_surface.get_rect(center=(W//2, y_offset))
+                    screen.blit(text_surface, text_rect)
+    else:
+        screen.fill(BLUE_RGB)
+        write_title(screen, "Question pour un champion", TITLE_SIZE/2)
+        write_title(screen, "Face à face", 3*TITLE_SIZE/2)
+        draw_player_zone(screen, score[0], i=0)
+        draw_player_zone(screen, score[1], i=3)
+        time_elapsed = (current_time - timer_start) / 1000
+        time_left = timer_duration - time_elapsed 
+        if left:
+            for i, point in enumerate(points):
+                polygon_size = 100
+                polygon_height = 2 *(polygon_size * math.sin(math.pi / 6))
+                polygon_spacing = polygon_height + 100
+                total_height = len(points) * polygon_spacing
+                start_y = (H - total_height) // 2 + 250
+                y_offset = start_y + i * polygon_spacing
+                
+                fill_color = ORANGE_RGB
+                border_color = GOLD_RGB
+                x = W//2 - polygon_size//2 if (point%2 == 0) else W//2 + polygon_size//2
+                draw_polygon(screen, x, y_offset, polygon_size, border_color)
+                draw_polygon(screen, x, y_offset, polygon_size - 15, BLUE_RGB)
+                fill_polygon(screen, x, y_offset, polygon_size - 15, fill_color, 100 * time_left / timer_duration)
+                text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
+                text_rect = text_surface.get_rect(center=(x, y_offset))
+                screen.blit(text_surface, text_rect)
+        else:
+            for i, point in enumerate(points):
+                polygon_size = 100
+                polygon_height = 2 *(polygon_size * math.sin(math.pi / 6))
+                polygon_spacing = polygon_height + 100
+                total_height = len(points) * polygon_spacing
+                start_y = (H - total_height) // 2 + 250
+                y_offset = start_y + i * polygon_spacing
+                
+                fill_color = ORANGE_RGB
+                border_color = GOLD_RGB
+                x = W//2 + polygon_size//2 if (point%2 == 0) else W//2 - polygon_size//2
+                draw_polygon(screen, x, y_offset, polygon_size, border_color)
+                draw_polygon(screen, x, y_offset, polygon_size - 15, fill_color)
+                text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
+                text_rect = text_surface.get_rect(center=(x, y_offset))
+                screen.blit(text_surface, text_rect)
+
     pygame.display.update()  # Or pygame.display.flip()
 
 pygame.quit()
