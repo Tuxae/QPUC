@@ -6,7 +6,7 @@ PINK = "#E15A97"
 POWDER = "#A9CCF4"
 SEASHELL = "#FBF3F0"
 GREEN = "#6BAB90"
-
+ORANGE = "#FF7518"
 def hex_to_rgb(hex):
     return tuple(int(hex[1+i:1+i+2], 16) for i in (0, 2, 4))
 
@@ -17,4 +17,4 @@ PINK_RGB = hex_to_rgb(PINK)
 POWDER_RGB = hex_to_rgb(POWDER)
 SEASHELL_RGB = hex_to_rgb(SEASHELL)
 GREEN_RGB = hex_to_rgb(GREEN)
-
+ORANGE_RGB = hex_to_rgb(ORANGE)
