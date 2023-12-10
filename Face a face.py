@@ -246,7 +246,7 @@ while True:
                 start_y = (H - total_height) // 2 + 250
                 y_offset = start_y + i * polygon_spacing
                 
-                fill_color = ORANGE_RGB
+                fill_color = BLUE_RGB
                 border_color = GOLD_RGB
                 x = W//2 - polygon_size//2 if (point%2 == 0) else W//2 + polygon_size//2
                 draw_polygon(screen, x, y_offset, polygon_size, border_color)
