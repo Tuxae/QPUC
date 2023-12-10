@@ -78,7 +78,7 @@ def draw_player_zone(screen, i=0):
     )
     angle = 0
     target_width = PLAYER_LONG-1*PLAYER_BORDER
-    img = pygame.image.load("images/test.jpg").convert()
+    img = pygame.image.load("images/profrouge.jpg").convert()
     rect = img.get_rect()
     scale = target_width / rect.width
     img = pygame.transform.rotozoom(img, angle, scale)
@@ -163,14 +163,26 @@ while True:
                 liste_score[2] -= 1
             if event.key == pygame.K_f:
                 liste_score[3] -= 1
-            if event.key == pygame.K_q:
-                liste_score[0] -= 1
-            if event.key == pygame.K_s:
-                liste_score[1] -= 1
-            if event.key == pygame.K_d:
-                liste_score[2] -= 1
-            if event.key == pygame.K_f:
-                liste_score[3] -= 1
+            if event.key == pygame.K_w:
+                liste_on[0] = False
+                super_arduino.turn_on_buzzer(liste_on)
+                on_game = True
+            if event.key == pygame.K_x:
+                liste_on[1] = False
+                super_arduino.turn_on_buzzer(liste_on)
+                on_game = True
+            if event.key == pygame.K_c:
+                liste_on[2] = False
+                super_arduino.turn_on_buzzer(liste_on)
+                on_game = True
+            if event.key == pygame.K_v:
+                liste_on[3] = False
+                super_arduino.turn_on_buzzer(liste_on)
+                on_game = True
+            if event.key == pygame.K_SPACE:
+                liste_on = [True, True, True, True]
+                super_arduino.turn_on_buzzer(liste_on)
+                on_game = True
             if event.key == pygame.K_ESCAPE:
                 quit()
     

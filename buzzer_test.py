@@ -4,7 +4,7 @@ import time
 
 from playsound import playsound
 
-super_arduino = SuperArduino('/dev/ttyACM1')
+super_arduino = SuperArduino('/dev/ttyACM0')
 
 super_arduino.turn_on_light()
 
