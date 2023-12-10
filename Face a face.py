@@ -60,36 +60,46 @@ def draw_polygon(screen, x, y, polygon_size, polygon_colour):
     # Drawing the polygon
     pygame.draw.polygon(screen, polygon_colour, points)
 
-def fill_polygon(screen, x, y, polygon_size, polygon_colour, fill_percentage):
-    """
-    Fills a percentage of a hexagon polygon vertically.
+def draw_progress_bar(screen, x, y, size, fill_percentage):
+    height = 2 * size * math.sin(2 * math.pi / 6)
+    progress_height = height * fill_percentage / 100
+    pygame.draw.rect(screen, GREEN_RGB, [x - size, y + height // 2 - progress_height, 2 * size, progress_height])
 
-    :param screen: Pygame screen where to draw.
-    :param x: X-coordinate of the center of the polygon.
-    :param y: Y-coordinate of the center of the polygon.
-    :param polygon_size: Size of the polygon (diameter for circumscribed circle).
-    :param polygon_colour: Color to fill the polygon.
-    :param fill_percentage: Percentage of the polygon to fill.
-    """
-    num_sides = 6
-    angle = math.pi / num_sides
-    height = 2 * (polygon_size * math.cos(angle))
-    fill_height = height * (fill_percentage / 100)
+    points = []
+    points1 = []
+    for i in range(6):
+        angle = 2 * math.pi * i / 6
+        point_x = x + (size + 15)* math.cos(angle)
+        point_y = y + (size + 15) * math.sin(angle)
+        points.append((point_x, point_y))
+        point_x1 = x + (size) * math.cos(angle)
+        point_y1 = y + (size) * math.sin(angle)
+        points1.append((point_x1, point_y1))
+    hex_height =  size * math.sin(2 * math.pi / 6) 
+    half_width = size 
+    half_height = hex_height 
 
-    # Calculating the bottom y-coordinate of the filled area
-    fill_bottom_y = y + height / 2
-    fill_top_y = fill_bottom_y - fill_height
+    # Coordinates for the four corner triangles
+    top_left_triangle = [points[0] , points[1], (x + half_width, y + half_height)]
+    top_right_triangle = [points[2], points[3], (x - half_width, y + half_height)]
+    bottom_left_triangle = [points[3], points[4], (x - half_width, y - half_height)]
+    bottom_right_triangle = [points[5], points[0], (x + half_width, y - half_height)]
+    top_left_triangle1 = [points1[0] , points1[1], (x + half_width, y + half_height)]
+    top_right_triangle1 = [points1[2], points1[3], (x - half_width, y + half_height)]
+    bottom_left_triangle1 = [points1[3], points1[4], (x - half_width, y - half_height)]
+    bottom_right_triangle1 = [points1[5], points1[0], (x + half_width, y - half_height)]
 
-    # Points for the filled area
-    fill_points = [
-        (x - polygon_size / 2, fill_bottom_y),
-        (x - polygon_size / 2, fill_top_y),
-        (x + polygon_size / 2, fill_top_y),
-        (x + polygon_size / 2, fill_bottom_y)
-    ]
+    # Drawing the triangles
+    pygame.draw.polygon(screen, GOLD_RGB, top_left_triangle1)
+    pygame.draw.polygon(screen, GOLD_RGB, top_right_triangle1)
+    pygame.draw.polygon(screen, GOLD_RGB, bottom_left_triangle1)
+    pygame.draw.polygon(screen, GOLD_RGB, bottom_right_triangle1)
+ 
+    pygame.draw.polygon(screen, BLUE_RGB, top_left_triangle)
+    pygame.draw.polygon(screen, BLUE_RGB, top_right_triangle)
+    pygame.draw.polygon(screen, BLUE_RGB, bottom_left_triangle)
+    pygame.draw.polygon(screen, BLUE_RGB, bottom_right_triangle)
 
-    # Draw the filled area
-    pygame.draw.polygon(screen, polygon_colour, fill_points)
 
 def draw_player_zone(screen, score, i=0):
     pygame.draw.rect(
@@ -206,7 +216,7 @@ while True:
             draw_player_zone(screen, score[1], i=3)
             for i, point in enumerate(points):
                     polygon_size = 100
-                    polygon_height = 2 *(polygon_size * math.sin(math.pi / 6))
+                    polygon_height = (polygon_size * math.sin(2 * math.pi / 6))
                     polygon_spacing = polygon_height + 100
                     total_height = len(points) * polygon_spacing
                     start_y = (H - total_height) // 2 + 250
@@ -240,15 +250,15 @@ while True:
                 border_color = GOLD_RGB
                 x = W//2 - polygon_size//2 if (point%2 == 0) else W//2 + polygon_size//2
                 draw_polygon(screen, x, y_offset, polygon_size, border_color)
-                draw_polygon(screen, x, y_offset, polygon_size - 15, BLUE_RGB)
-                fill_polygon(screen, x, y_offset, polygon_size - 15, fill_color, 100 * time_left / timer_duration)
+                draw_polygon(screen, x, y_offset, polygon_size - 15, fill_color)
+                draw_progress_bar(screen, x, y_offset, polygon_size - 15, time_left/timer_duration*100)
                 text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
                 text_rect = text_surface.get_rect(center=(x, y_offset))
                 screen.blit(text_surface, text_rect)
         else:
             for i, point in enumerate(points):
                 polygon_size = 100
-                polygon_height = 2 *(polygon_size * math.sin(math.pi / 6))
+                polygon_height = 2 * (polygon_size * math.sin(math.pi / 6))
                 polygon_spacing = polygon_height + 100
                 total_height = len(points) * polygon_spacing
                 start_y = (H - total_height) // 2 + 250
