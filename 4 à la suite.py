@@ -87,7 +87,7 @@ def adjust_brightness(color, factor):
     return tuple(int(min(max(0, c * factor), 255)) for c in color)
 
 # Set up the display
-screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN | pygame.SCALED)
 pygame.display.set_caption('Menu and Polygons Screen')
 
 # Menu items

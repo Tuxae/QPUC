@@ -6,7 +6,7 @@ from buzzer import SuperArduino
 Ceci est le code pour le 9 points gagnants
 
 """
-super_arduino = SuperArduino('/dev/ttyACM1')
+super_arduino = SuperArduino('COM3')
 
 successes, failures = pygame.init()
 print("{0} successes and {1} failures".format(successes, failures))

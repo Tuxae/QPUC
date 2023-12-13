@@ -2,9 +2,8 @@ from buzzer import SuperArduino
 from pyfirmata import Arduino, util
 import time
 
-from playsound import playsound
 
-super_arduino = SuperArduino('/dev/ttyACM0')
+super_arduino = SuperArduino('COM3')
 
 super_arduino.turn_on_light()
 
