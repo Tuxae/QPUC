@@ -18,7 +18,7 @@ TEXT_FONT = pygame.font.Font(None, 60)
 BOLD_FONT = pygame.font.Font(None, 36)
 BOLD_FONT.set_bold(True)  # Set the font to bold
 
-screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN|pygame.SCALED)
 PLAYER_BORDER = H*0.06
 PLAYER_LONG = (W - 5*PLAYER_BORDER)/4
 clock = pygame.time.Clock()
@@ -174,12 +174,13 @@ points = [4, 3, 2, 1]
 timer_active = False
 timer_start = 0
 timer_duration = 20  # Duration of the timer in seconds
-left = True
+left = [True, False, True, False]
+intervals = [[13.5,20],[8.5,13.5],[4,8.5],[0,4]]
 while True:
     clock.tick(FPS)
+    current_time = pygame.time.get_ticks()  # Current time in milliseconds
 
     for event in pygame.event.get():
-        current_time = pygame.time.get_ticks()  # Current time in milliseconds
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
@@ -189,22 +190,27 @@ while True:
                     timer_start = current_time
                     timer_active = True
             if event.key == pygame.K_q:
-                    left = True
+                    left = [True, False, True, False]
             if event.key == pygame.K_d:
-                    left = False
+                    left = [False, True, False, True]
 
             if timer_active:
-
-                if left:
-                    if event.key == pygame.K_a:
-                        score[0] += -1
-                    elif event.key == pygame.K_z:
-                        left = False
-                elif not left:
-                    if event.key == pygame.K_a:
-                        score[1] += 1
-                    elif event.key == pygame.K_z:
-                        left = True
+                remaining_time = timer_duration - (current_time - timer_start) / 1000
+                if remaining_time == 0:
+                     timer_active = False
+                for i, interval in enumerate(intervals):
+                    if interval[0] < remaining_time <= interval[1]:
+                        if left[i]:
+                            if event.key == pygame.K_o:
+                                score[0] += points[i]
+                            elif event.key == pygame.K_p:
+                                left[i] = False
+                        else:
+                            if event.key == pygame.K_o:
+                                score[1] += points[i]
+                            elif event.key == pygame.K_p: 
+                                left[i] = True                    
+                    
 
     draw_player_zone(screen, score[0], i=0)
     draw_player_zone(screen, score[1], i=3)
@@ -237,41 +243,27 @@ while True:
         draw_player_zone(screen, score[1], i=3)
         time_elapsed = (current_time - timer_start) / 1000
         time_left = timer_duration - time_elapsed 
-        if left:
-            for i, point in enumerate(points):
-                polygon_size = 100
-                polygon_height = 2 *(polygon_size * math.sin(math.pi / 6))
-                polygon_spacing = polygon_height + 100
-                total_height = len(points) * polygon_spacing
-                start_y = (H - total_height) // 2 + 250
-                y_offset = start_y + i * polygon_spacing
-                
-                fill_color = BLUE_RGB
-                border_color = GOLD_RGB
-                x = W//2 - polygon_size//2 if (point%2 == 0) else W//2 + polygon_size//2
-                draw_polygon(screen, x, y_offset, polygon_size, border_color)
-                draw_polygon(screen, x, y_offset, polygon_size - 15, fill_color)
-                draw_progress_bar(screen, x, y_offset, polygon_size - 15, time_left/timer_duration*100)
-                text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
-                text_rect = text_surface.get_rect(center=(x, y_offset))
-                screen.blit(text_surface, text_rect)
-        else:
-            for i, point in enumerate(points):
-                polygon_size = 100
-                polygon_height = 2 * (polygon_size * math.sin(math.pi / 6))
-                polygon_spacing = polygon_height + 100
-                total_height = len(points) * polygon_spacing
-                start_y = (H - total_height) // 2 + 250
-                y_offset = start_y + i * polygon_spacing
-                
-                fill_color = ORANGE_RGB
-                border_color = GOLD_RGB
-                x = W//2 + polygon_size//2 if (point%2 == 0) else W//2 - polygon_size//2
-                draw_polygon(screen, x, y_offset, polygon_size, border_color)
-                draw_polygon(screen, x, y_offset, polygon_size - 15, fill_color)
-                text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
-                text_rect = text_surface.get_rect(center=(x, y_offset))
-                screen.blit(text_surface, text_rect)
+        for i, point in enumerate(points):
+            polygon_size = 100
+            polygon_height = 2 * (polygon_size * math.sin(math.pi / 6))
+            polygon_spacing = polygon_height + 100
+            total_height = len(points) * polygon_spacing
+            start_y = (H - total_height) // 2 + 250
+            y_offset = start_y + i * polygon_spacing
+            
+            fill_color = BLUE_RGB
+            border_color = GOLD_RGB
+            x = W//2 - polygon_size//2 if left[i] else W//2 + polygon_size//2
+            draw_polygon(screen, x, y_offset, polygon_size, border_color)
+            draw_polygon(screen, x, y_offset, polygon_size - 15, fill_color)
+            if intervals[i][0] < time_left <= intervals[i][1]:
+                draw_progress_bar(screen, x, y_offset, polygon_size - 15, (time_left - intervals[i][0])/(intervals[i][1] - intervals[i][0])*100)
+            else:
+                draw_polygon(screen, x, y_offset, polygon_size - 15, GREEN_RGB)
+            text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
+            text_rect = text_surface.get_rect(center=(x, y_offset))
+            screen.blit(text_surface, text_rect)
+
 
     pygame.display.update()  # Or pygame.display.flip()
 
