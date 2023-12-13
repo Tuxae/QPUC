@@ -22,7 +22,7 @@ screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN|pygame.SCALED)
 PLAYER_BORDER = H*0.06
 PLAYER_LONG = (W - 5*PLAYER_BORDER)/4
 clock = pygame.time.Clock()
-FPS = 60  # Frames per second.
+FPS = 120  # Frames per second.
 
 def write_title(screen, title, y_pos):
     text_qpuc = GAME_FONT.render(title, False, SEASHELL_RGB)
@@ -63,7 +63,7 @@ def draw_polygon(screen, x, y, polygon_size, polygon_colour):
 def draw_progress_bar(screen, x, y, size, fill_percentage):
     height = 2 * size * math.sin(2 * math.pi / 6)
     progress_height = height * fill_percentage / 100
-    pygame.draw.rect(screen, GREEN_RGB, [x - size, y + height // 2 - progress_height, 2 * size, progress_height])
+    pygame.draw.rect(screen, GREEN_RGB, [x - size, y + height // 2 - progress_height + 2, 2 * size, progress_height])
 
     points = []
     points1 = []
@@ -163,6 +163,9 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
         text_rect = text_surface.get_rect(center=(75 * polygon_size, y_offset + 25 * polygon_size))
         screen.blit(text_surface, text_rect)
 
+def in_interval(item,list):
+     return list[0] < item <= list[1]
+
 
 screen.fill(BLUE_RGB)
 write_title(screen, "Question pour un champion", TITLE_SIZE/2)
@@ -177,6 +180,7 @@ timer_duration = 20  # Duration of the timer in seconds
 left = [True, False, True, False]
 intervals = [[13.5,20],[8.5,13.5],[4,8.5],[0,4]]
 pause = False
+timer_paused_at = 0 
 while True:
     clock.tick(FPS)
     current_time = pygame.time.get_ticks()  # Current time in milliseconds
@@ -187,6 +191,7 @@ while True:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 timer_active = False
+                pause = False
             if event.key == pygame.K_i and not timer_active:
                     timer_start = current_time
                     timer_active = True
@@ -196,26 +201,39 @@ while True:
                     left = [False, True, False, True]
 
             if timer_active:
+                if event.key == pygame.K_SPACE and not pause:
+                    pause = not pause
+                    if pause:
+                        timer_paused_at = current_time
                 remaining_time = timer_duration - (current_time - timer_start) / 1000
-                if event.key == pygame.K_SPACE:
-                     pause = not pause
                 if remaining_time == 0:
                      timer_active = False
-                for i, interval in enumerate(intervals):
-                    if interval[0] < remaining_time <= interval[1]:
-                        if left[i] and pause:
-                            if event.key == pygame.K_o:
-                                score[0] += points[i]
-                                timer_active = False
-                            elif event.key == pygame.K_p:
-                                left[i] = False
-                        elif not left[i] and pause:
-                            if event.key == pygame.K_o:
-                                score[1] += points[i]
-                                timer_active = False
-                            elif event.key == pygame.K_p: 
-                                left[i] = True                    
-                    
+                print(remaining_time)
+                i = [in_interval(remaining_time, intervals[i]) for i in range(4)].index(True)
+                print(i)
+                if left[i] and pause:
+                    if event.key == pygame.K_o:
+                        timer_start = timer_start + current_time - timer_paused_at
+                        score[0] += points[i]
+                        timer_active = False
+                        pause = False
+                    elif event.key == pygame.K_p:
+                        timer_start = timer_start + current_time - timer_paused_at
+                        left[i] = False
+                        pause = False
+
+                elif not left[i] and pause:
+                    if event.key == pygame.K_o:
+                        timer_start = timer_start + current_time - timer_paused_at
+                        score[1] += points[i]
+                        timer_active = False
+                        pause = False
+
+                    elif event.key == pygame.K_p: 
+                        timer_start = timer_start + current_time - timer_paused_at
+                        left[i] = True     
+                        pause = False               
+
 
     draw_player_zone(screen, score[0], i=0)
     draw_player_zone(screen, score[1], i=3)
@@ -240,14 +258,17 @@ while True:
                     text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
                     text_rect = text_surface.get_rect(center=(W//2, y_offset))
                     screen.blit(text_surface, text_rect)
-    else:
+    elif timer_active and not pause:
+        remaining_time = timer_duration - (current_time - timer_start) / 1000
+        if remaining_time <= 0:
+             timer_active = False
+             remaining_time = 0
         screen.fill(BLUE_RGB)
         write_title(screen, "Question pour un champion", TITLE_SIZE/2)
         write_title(screen, "Face à face", 3*TITLE_SIZE/2)
         draw_player_zone(screen, score[0], i=0)
         draw_player_zone(screen, score[1], i=3)
-        time_elapsed = (current_time - timer_start) / 1000
-        time_left = timer_duration - time_elapsed 
+        
         for i, point in enumerate(points):
             polygon_size = 100
             polygon_height = 2 * (polygon_size * math.sin(math.pi / 6))
@@ -261,9 +282,9 @@ while True:
             x = W//2 - polygon_size//2 if left[i] else W//2 + polygon_size//2
             draw_polygon(screen, x, y_offset, polygon_size, border_color)
             draw_polygon(screen, x, y_offset, polygon_size - 15, fill_color)
-            if intervals[i][0] < time_left <= intervals[i][1]:
-                draw_progress_bar(screen, x, y_offset, polygon_size - 15, (time_left - intervals[i][0])/(intervals[i][1] - intervals[i][0])*100)
-            else:
+            if intervals[i][0] < remaining_time <= intervals[i][1]:
+                draw_progress_bar(screen, x, y_offset, polygon_size - 15, (remaining_time - intervals[i][0])/(intervals[i][1] - intervals[i][0])*100)
+            elif remaining_time >= intervals[i][0]:
                 draw_polygon(screen, x, y_offset, polygon_size - 15, GREEN_RGB)
             text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
             text_rect = text_surface.get_rect(center=(x, y_offset))

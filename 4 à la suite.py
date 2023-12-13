@@ -159,6 +159,7 @@ while running:
             rect_border_color = adjust_brightness((50, 205, 50) if is_last_menu else (255, 190, 0), 0.8) if selected_items[i] else ((50, 205, 50) if is_last_menu else (255, 190, 0))
 
             draw_rounded_rect(screen, pygame.Rect(1920 // 2 - max_text_width // 2, rect_top, max_text_width, rect_height),
+            
                               rect_color, rect_border_color, 20)
 
             font = BOLD_FONT if selected_items[i] else GAME_FONT
