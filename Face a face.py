@@ -3,6 +3,7 @@ import pygame.gfxdraw
 from constants import *
 from buzzer import SuperArduino
 import math
+from pygame import mixer
 # Initialize Pygame
 pygame.init()
 #super_arduino = SuperArduino()
@@ -32,7 +33,7 @@ def write_title(screen, title, y_pos):
 def draw_hexagon(screen, x, y, width=0, height=0):
     pygame.draw.polygon(
         screen, 
-        GOLD_RGB, 
+        ORANGE_RGB, 
         ((x+65, y+350), (x+115, y+350), (x+140, y+375), (x+115, y+400), (x+65, y+400), (x+40, y+375), (x+65, y+350))
     )
 
@@ -63,7 +64,7 @@ def draw_polygon(screen, x, y, polygon_size, polygon_colour):
 def draw_progress_bar(screen, x, y, size, fill_percentage):
     height = 2 * size * math.sin(2 * math.pi / 6)
     progress_height = height * fill_percentage / 100
-    pygame.draw.rect(screen, GREEN_RGB, [x - size, y + height // 2 - progress_height + 2, 2 * size, progress_height])
+    pygame.draw.rect(screen, ORANGE_RGB, [x - size, y + height // 2 - progress_height + 2, 2 * size, progress_height])
 
     points = []
     points1 = []
@@ -181,6 +182,8 @@ left = [True, False, True, False]
 intervals = [[13.5,20],[8.5,13.5],[4,8.5],[0,4]]
 pause = False
 timer_paused_at = 0 
+mixer.init()
+tic_sound = mixer.Sound("sounds/Tic.wav")
 while True:
     clock.tick(FPS)
     current_time = pygame.time.get_ticks()  # Current time in milliseconds
@@ -189,6 +192,8 @@ while True:
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                timer_active = False
             if event.key == pygame.K_i and not timer_active:
                     timer_start = current_time
                     timer_active = True
@@ -198,16 +203,25 @@ while True:
                     left = [False, True, False, True]
 
             if timer_active:
+                if not tic_sound.get_num_channels():  # Play only if not already playing
+                    tic_sound.play(loops=-1)  # -1 means loop indefinitely
                 if event.key == pygame.K_SPACE and not pause:
                     pause = not pause
                     if pause:
                         timer_paused_at = current_time
                 if pause:
+                    tic_sound.stop()  # Stop the sound if the timer is not active
                     pass
-                else:
+                if not pause:
+                    if not tic_sound.get_num_channels():  # Play only if not already playing
+                        tic_sound.play(loops=-1)  # -1 means loop indefinitely
                     remaining_time = timer_duration - (current_time - timer_start) / 1000
                 if remaining_time <= 0:
-                     timer_active = False
+                    timer_active = False
+                    mixer.music.load("sounds/Dudu.wav")
+                    mixer.music.play()
+                    tic_sound.stop()  # Stop the sound if the timer is not active
+
                 i = [in_interval(remaining_time, intervals[i]) for i in range(4)].index(True)
                 if left[i] and pause:
                     if event.key == pygame.K_o:
@@ -218,8 +232,11 @@ while True:
                     elif event.key == pygame.K_p:
                         timer_start = timer_start + current_time - timer_paused_at
                         left[i] = False
-                        if left[i+1]:
-                            left[i+1] = False
+                        for j in range(i + 1, 4):
+                            if left[j]:
+                                left[j] = False
+                            else:
+                                break
                         pause = False
 
                 elif not left[i] and pause:
@@ -232,9 +249,14 @@ while True:
                     elif event.key == pygame.K_p: 
                         timer_start = timer_start + current_time - timer_paused_at
                         left[i] = True
-                        if not left[i+1]:
-                            left[i+1] = True     
-                        pause = False               
+                        for j in range(i + 1, 4):
+                            if not left[j]:
+                                left[j] = True 
+                            else:
+                                break
+                        pause = False       
+            else:
+                tic_sound.stop() 
 
 
     draw_player_zone(screen, score[0], i=0)
@@ -263,8 +285,10 @@ while True:
     elif timer_active and not pause:
         remaining_time = timer_duration - (current_time - timer_start) / 1000
         if remaining_time <= 0:
-             timer_active = False
-             remaining_time = 0
+            timer_active = False
+            remaining_time = 0
+            mixer.music.load("sounds/Dudu.wav")
+            mixer.music.play()
         screen.fill(BLUE_RGB)
         write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
         write_title(screen, "Face à face", 3*TITLE_SIZE/2)
@@ -287,7 +311,7 @@ while True:
             if intervals[i][0] < remaining_time <= intervals[i][1]:
                 draw_progress_bar(screen, x, y_offset, polygon_size - 15, (remaining_time - intervals[i][0])/(intervals[i][1] - intervals[i][0])*100)
             elif remaining_time >= intervals[i][0]:
-                draw_polygon(screen, x, y_offset, polygon_size - 15, GREEN_RGB)
+                draw_polygon(screen, x, y_offset, polygon_size - 15, ORANGE_RGB)
             text_surface = TEXT_FONT.render(str(point), False, SEASHELL_RGB)
             text_rect = text_surface.get_rect(center=(x, y_offset))
             screen.blit(text_surface, text_rect)
