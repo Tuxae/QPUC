@@ -176,6 +176,7 @@ timer_start = 0
 timer_duration = 20  # Duration of the timer in seconds
 left = [True, False, True, False]
 intervals = [[13.5,20],[8.5,13.5],[4,8.5],[0,4]]
+pause = False
 while True:
     clock.tick(FPS)
     current_time = pygame.time.get_ticks()  # Current time in milliseconds
@@ -196,18 +197,22 @@ while True:
 
             if timer_active:
                 remaining_time = timer_duration - (current_time - timer_start) / 1000
+                if event.key == pygame.K_SPACE:
+                     pause = not pause
                 if remaining_time == 0:
                      timer_active = False
                 for i, interval in enumerate(intervals):
                     if interval[0] < remaining_time <= interval[1]:
-                        if left[i]:
+                        if left[i] and pause:
                             if event.key == pygame.K_o:
                                 score[0] += points[i]
+                                timer_active = False
                             elif event.key == pygame.K_p:
                                 left[i] = False
-                        else:
+                        elif not left[i] and pause:
                             if event.key == pygame.K_o:
                                 score[1] += points[i]
+                                timer_active = False
                             elif event.key == pygame.K_p: 
                                 left[i] = True                    
                     
