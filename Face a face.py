@@ -218,6 +218,8 @@ while True:
                     elif event.key == pygame.K_p:
                         timer_start = timer_start + current_time - timer_paused_at
                         left[i] = False
+                        if left[i+1]:
+                            left[i+1] = False
                         pause = False
 
                 elif not left[i] and pause:
@@ -229,7 +231,9 @@ while True:
 
                     elif event.key == pygame.K_p: 
                         timer_start = timer_start + current_time - timer_paused_at
-                        left[i] = True     
+                        left[i] = True
+                        if not left[i+1]:
+                            left[i+1] = True     
                         pause = False               
 
 
