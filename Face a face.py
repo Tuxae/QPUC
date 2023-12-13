@@ -189,9 +189,6 @@ while True:
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                timer_active = False
-                pause = False
             if event.key == pygame.K_i and not timer_active:
                     timer_start = current_time
                     timer_active = True
@@ -205,12 +202,13 @@ while True:
                     pause = not pause
                     if pause:
                         timer_paused_at = current_time
-                remaining_time = timer_duration - (current_time - timer_start) / 1000
-                if remaining_time == 0:
+                if pause:
+                    pass
+                else:
+                    remaining_time = timer_duration - (current_time - timer_start) / 1000
+                if remaining_time <= 0:
                      timer_active = False
-                print(remaining_time)
                 i = [in_interval(remaining_time, intervals[i]) for i in range(4)].index(True)
-                print(i)
                 if left[i] and pause:
                     if event.key == pygame.K_o:
                         timer_start = timer_start + current_time - timer_paused_at
@@ -264,7 +262,7 @@ while True:
              timer_active = False
              remaining_time = 0
         screen.fill(BLUE_RGB)
-        write_title(screen, "Question pour un champion", TITLE_SIZE/2)
+        write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
         write_title(screen, "Face à face", 3*TITLE_SIZE/2)
         draw_player_zone(screen, score[0], i=0)
         draw_player_zone(screen, score[1], i=3)
