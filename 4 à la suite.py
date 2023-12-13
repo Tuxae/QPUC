@@ -49,7 +49,7 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
                    (100, 50), (50, 50), (25, 25), (50, 0)]]
 
         # Fill color is GREEN_RGB for the selected polygon and POWDER_RGB for others
-        fill_color = GREEN_RGB if i == current_polygon_index else BLUE_RGB
+        fill_color = ORANGE_RGB if i == current_polygon_index else BLUE_RGB
 
         # Border color logic
         if score > border_index:
@@ -70,21 +70,17 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
     rect_height = max_text_height
     start_menu_y = 1000 
     rect_top = start_menu_y 
-    rect_color = (255, 190, 0) # Adjust brightness to 80%
-    rect_border_color = (255, 190, 0)
+    rect_color = ORANGE_RGB # Adjust brightness to 80%
+    rect_border_color = ORANGE_RGB
     draw_rounded_rect(screen, pygame.Rect(1920 // 2 - max_text_width // 2, rect_top, max_text_width, rect_height),
                         rect_color, rect_border_color, 20)
 
     font = BOLD_FONT if selected_items[i] else GAME_FONT
-    text_color = (255, 255, 255)
+    text_color = SEASHELL_RGB
     outline_color = (0, 0, 0)
     item = "Attaque et défense chez les animaux" if i == len(menu_items) - 1 else menu_items[i]
     draw_outlined_text(font, item, text_color, outline_color, (W // 2, rect_top + rect_height // 2))
 
-
-def adjust_brightness(color, factor):
-    # Adjust the brightness of a color
-    return tuple(int(min(max(0, c * factor), 255)) for c in color)
 
 # Set up the display
 screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN | pygame.SCALED)
@@ -142,7 +138,7 @@ while running:
                         timer_active = False
     # Clear the screen
     screen.fill(BLUE_RGB)
-    write_title(screen, "Question pour un champion", (H//12)/2)
+    write_title(screen, "Questions pour un champion", (H//12)/2)
     write_title(screen, "Quatre à la suite", 3*(H//12)/2)
     if menu_screen:
         max_text_width = max(GAME_FONT.size(item)[0] for item in menu_items) + 500
@@ -155,15 +151,15 @@ while running:
             start_menu_y = (1080 - len(menu_items) * rect_height - (len(menu_items) - 1) * vertical_gap) // 2
 
             rect_top = start_menu_y + i * (rect_height + vertical_gap)
-            rect_color = adjust_brightness((50, 205, 50) if is_last_menu else (255, 190, 0), 0.8) if selected_items[i] else ((50, 205, 50) if is_last_menu else (255, 190, 0))
-            rect_border_color = adjust_brightness((50, 205, 50) if is_last_menu else (255, 190, 0), 0.8) if selected_items[i] else ((50, 205, 50) if is_last_menu else (255, 190, 0))
+            rect_color = ORANGE_RGB if selected_items[i] else GREEN_RGB if is_last_menu else ORANGE_RGB
+            rect_border_color = ORANGE_RGB if selected_items[i] else GREEN_RGB if is_last_menu else ORANGE_RGB
 
             draw_rounded_rect(screen, pygame.Rect(1920 // 2 - max_text_width // 2, rect_top, max_text_width, rect_height),
             
                               rect_color, rect_border_color, 20)
 
             font = BOLD_FONT if selected_items[i] else GAME_FONT
-            text_color = (255, 255, 255)
+            text_color = SEASHELL_RGB
             outline_color = (0, 0, 0)
             draw_outlined_text(font, item, text_color, outline_color, (W // 2, rect_top + rect_height // 2))
     else:
@@ -171,13 +167,13 @@ while running:
             time_elapsed = (current_time - timer_start) / 1000  # Convert to seconds
             remaining_time = max(timer_duration - int(time_elapsed), 0)  # Calculate remaining time
             timer_text = f"{remaining_time} s"
-            timer_surface = GAME_FONT.render(timer_text, True, (255, 255, 255))
+            timer_surface = GAME_FONT.render(timer_text, True, SEASHELL_RGB)
             timer_rect = timer_surface.get_rect(left=W // 2 + 450, top = H - 75)
             rect_width = 60  # Padding for the rectangle
             rect_height = 50
             rect_x = timer_rect.left -8   # 5 pixels padding on left
             rect_y = timer_rect.top -10  # 5 pixels padding on top
-
+            
             # Draw the rectangle
             pygame.draw.rect(screen, (0, 0, 0), (rect_x - 2, rect_y - 2, rect_width + 2 * 2, rect_height + 2 * 2))
 

@@ -33,7 +33,7 @@ def write_title(screen, title, y_pos):
 def draw_hexagon(screen, x, y, width=0, height=0):
     pygame.draw.polygon(
         screen, 
-        GOLD_RGB, 
+        ORANGE_RGB, 
         ((x+65, y+350), (x+115, y+350), (x+140, y+375), (x+115, y+400), (x+65, y+400), (x+40, y+375), (x+65, y+350))
     )
 
