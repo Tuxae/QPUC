@@ -2,7 +2,7 @@ from pyfirmata import Arduino, util
 import numpy as np
 "from playsound import playsound"
 from pygame import mixer
-import time
+import time, pygame
 
 class Buzzer:
 
@@ -82,6 +82,47 @@ class SuperArduino:
             if play_sound:
                 mixer.music.play()
             return np.argmax(liste)
+
+        
+
+
+        
+
+class ShadowSuperArduino:
+    def __init__(self, port="/dev/ttyACM0"):
+        self.on = [True, True, True, True]
+        mixer.init()
+        mixer.music.load("sounds/buzzer_bip_qpuc.wav")
+
+    def get_value(self, turn_on=True):
+        return [True]*4
+
+    def turn_on_buzzer(self, liste=[True, True, True, True]):
+        self.on = liste
+
+    def turn_on_light(self, liste=[True, True, True, True]):
+        pass
+
+    def get_winner(self, turn_on=True, play_sound=True):
+        def play_sound():
+            if play_sound:
+                mixer.music.play()
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_j and self.on[0]:
+                    play_sound()
+                    return 0
+                if event.key == pygame.K_k and self.on[1]:
+                    play_sound()
+                    return 1
+                if event.key == pygame.K_l and self.on[2]:
+                    play_sound()
+                    return 2
+                if event.key == pygame.K_m and self.on[3]:
+                    play_sound()
+                    return 3
+                    
+        return None
 
         
 

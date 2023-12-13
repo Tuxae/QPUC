@@ -1,12 +1,13 @@
 import pygame, time
 from constants import * 
-from buzzer import SuperArduino
+from buzzer import SuperArduino, ShadowSuperArduino
 
 """
 Ceci est le code pour le 9 points gagnants
 
 """
-super_arduino = SuperArduino('COM3')
+# super_arduino = SuperArduino('COM3')
+super_arduino = ShadowSuperArduino('COM3')
 
 successes, failures = pygame.init()
 print("{0} successes and {1} failures".format(successes, failures))
@@ -23,7 +24,7 @@ PLAYER_LONG = (W - 5*PLAYER_BORDER)/4
 # 720 / 4 180
 # 
 clock = pygame.time.Clock()
-FPS = 60  # Frames per second.
+FPS = 30  # Frames per second.
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -90,13 +91,14 @@ def draw_player_zone(screen, i=0):
         )
     )
 
-def draw_score(screen, i, val=0):
+def draw_score(screen, i, val=0, is_on=0):
     hexagon_width = W/10
+    color = [GOLD_RGB, GREEN_RGB, PINK_RGB][is_on]
     draw_hexagon(
         screen, 
         PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2, 
         H-2*PLAYER_BORDER-hexagon_width,
-        GOLD_RGB,
+        color,
         width=hexagon_width
     )
     draw_hexagon(
@@ -120,8 +122,14 @@ def draw_score(screen, i, val=0):
     text_rect = text_qpuc.get_rect(center=(x, y))
     screen.blit(text_qpuc, text_rect)
 
+def turn_on_play(liste_on):
+    super_arduino.turn_on_buzzer([x==0 for x in liste_on])
+    print("play")
+    return True
+
 liste_score = [0, 0, 0, 0]
-liste_on = [True, True, True, True]
+liste_on = [0, 0, 0, 0] # 0 : Gold, 1 : Green, 2 : Red
+# liste_on = [True, True, True, True]
 on_game = True
 screen.fill(BLUE_RGB)
 
@@ -142,6 +150,9 @@ while True:
             print(res, liste)
             super_arduino.turn_on_buzzer(liste)
             on_game = False
+            liste_on[res] = 1
+            for i in range(4):
+                draw_score(screen, i, val=liste_score[i], is_on=liste_on[i])
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -164,28 +175,26 @@ while True:
             if event.key == pygame.K_f:
                 liste_score[3] -= 1
             if event.key == pygame.K_w:
-                liste_on[0] = False
-                super_arduino.turn_on_buzzer(liste_on)
-                on_game = True
+                liste_on[0] = 2
+                on_game = turn_on_play(liste_on)
             if event.key == pygame.K_x:
-                liste_on[1] = False
-                super_arduino.turn_on_buzzer(liste_on)
-                on_game = True
+                liste_on[1] = 2
+                on_game = turn_on_play(liste_on)
             if event.key == pygame.K_c:
-                liste_on[2] = False
-                super_arduino.turn_on_buzzer(liste_on)
-                on_game = True
+                liste_on[2] = 2
+                on_game = turn_on_play(liste_on)
             if event.key == pygame.K_v:
-                liste_on[3] = False
-                super_arduino.turn_on_buzzer(liste_on)
-                on_game = True
+                liste_on[3] = 2
+                on_game = turn_on_play(liste_on)
             if event.key == pygame.K_SPACE:
                 liste_on = [True, True, True, True]
-                super_arduino.turn_on_buzzer(liste_on)
-                on_game = True
+                liste_on = [0, 0, 0, 0]
+                super_arduino.turn_on_buzzer([True, True, True, True])
+                on_game = turn_on_play(liste_on)
             if event.key == pygame.K_ESCAPE:
                 quit()
     
             for i in range(4):
-                draw_score(screen, i, val=liste_score[i])
+                draw_score(screen, i, val=liste_score[i], is_on=liste_on[i])
+        
     pygame.display.update()  # Or pygame.display.flip()

@@ -106,6 +106,8 @@ timer_active = False
 timer_start = 0
 timer_duration = 40  # Duration of the timer in seconds
 
+# Logos
+
 while running:
     current_time = pygame.time.get_ticks()  # Current time in milliseconds
     for event in pygame.event.get():
