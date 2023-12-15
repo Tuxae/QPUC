@@ -5,8 +5,9 @@ GOLD = "#FAD315"
 PINK = "#E15A97"
 POWDER = "#A9CCF4"
 SEASHELL = "#FBF3F0"
-GREEN = "#6BAB90"
-ORANGE = "#FF7518"
+#GREEN = "#7CFC00"
+GREEN = "#32CD32"
+ORANGE = "#FF8C00"
 def hex_to_rgb(hex):
     return tuple(int(hex[1+i:1+i+2], 16) for i in (0, 2, 4))
 

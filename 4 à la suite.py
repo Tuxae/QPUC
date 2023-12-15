@@ -8,10 +8,7 @@ W = 1920
 H = 1080
 # Initialize the font module after Pygame initialization
 TITTLE_FONT = pygame.font.SysFont('Comic Sans MS', H//12)
-GAME_FONT = pygame.font.Font(None, 36)
-TEXT_FONT = pygame.font.Font(None, 54)
-BOLD_FONT = pygame.font.Font(None, 36)
-BOLD_FONT.set_bold(True)  # Set the font to bold
+GAME_FONT = pygame.font.SysFont('futura', H // 24)
 
 def write_title(screen, title, y_pos):
     text_qpuc = TITTLE_FONT.render(title, False, SEASHELL_RGB)
@@ -60,7 +57,7 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
         pygame.draw.polygon(screen, fill_color, points)
         pygame.draw.lines(screen, border_color, True, points, 10)  # 10 is the border thickness
 
-        text_surface = TEXT_FONT.render(str(score), False, SEASHELL_RGB)
+        text_surface = GAME_FONT.render(str(score), False, SEASHELL_RGB)
         text_rect = text_surface.get_rect(center=(75 * polygon_size, y_offset + 25 * polygon_size))
         screen.blit(text_surface, text_rect)
 
@@ -68,14 +65,14 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
     is_last_menu = selected_index == len(menu_items) - 1
     i = selected_index
     rect_height = max_text_height
-    start_menu_y = 1000 
+    start_menu_y = 900 
     rect_top = start_menu_y 
     rect_color = ORANGE_RGB # Adjust brightness to 80%
     rect_border_color = ORANGE_RGB
     draw_rounded_rect(screen, pygame.Rect(1920 // 2 - max_text_width // 2, rect_top, max_text_width, rect_height),
                         rect_color, rect_border_color, 20)
 
-    font = BOLD_FONT if selected_items[i] else GAME_FONT
+    font = GAME_FONT
     text_color = SEASHELL_RGB
     outline_color = (0, 0, 0)
     item = "Attaque et défense chez les animaux" if i == len(menu_items) - 1 else menu_items[i]
@@ -104,6 +101,10 @@ timer_duration = 40  # Duration of the timer in seconds
 
 # Logos
 
+# Load sound files
+tic_sound = pygame.mixer.Sound('sounds/tic.wav')
+dudu_sound = pygame.mixer.Sound('sounds/Dudu.wav')
+
 while running:
     current_time = pygame.time.get_ticks()  # Current time in milliseconds
     for event in pygame.event.get():
@@ -123,6 +124,7 @@ while running:
                 if event.key == pygame.K_i and not timer_active:
                     timer_start = current_time
                     timer_active = True
+                    tic_sound.play(loops=-1)  # Play tic sound when timer starts
                 if timer_active:
                     if event.key == pygame.K_o:
                         if current_polygon_index > 0:
@@ -138,13 +140,14 @@ while running:
                         # Go back to the menu screen if Escape is pressed
                         menu_screen = True
                         timer_active = False
+
     # Clear the screen
     screen.fill(BLUE_RGB)
     write_title(screen, "Questions pour un champion", (H//12)/2)
     write_title(screen, "Quatre à la suite", 3*(H//12)/2)
     if menu_screen:
-        max_text_width = max(GAME_FONT.size(item)[0] for item in menu_items) + 500
-        max_text_height = GAME_FONT.size(max(menu_items, key=len))[1] + 20
+        max_text_width = max(GAME_FONT.size(item)[0] for item in menu_items) + 900
+        max_text_height = GAME_FONT.size(max(menu_items, key=len))[1] + 40
         vertical_gap = 20
 
         for i, item in enumerate(menu_items):
@@ -160,7 +163,7 @@ while running:
             
                               rect_color, rect_border_color, 20)
 
-            font = BOLD_FONT if selected_items[i] else GAME_FONT
+            font = GAME_FONT if selected_items[i] else GAME_FONT
             text_color = SEASHELL_RGB
             outline_color = (0, 0, 0)
             draw_outlined_text(font, item, text_color, outline_color, (W // 2, rect_top + rect_height // 2))
@@ -170,11 +173,11 @@ while running:
             remaining_time = max(timer_duration - int(time_elapsed), 0)  # Calculate remaining time
             timer_text = f"{remaining_time} s"
             timer_surface = GAME_FONT.render(timer_text, True, SEASHELL_RGB)
-            timer_rect = timer_surface.get_rect(left=W // 2 + 450, top = H - 75)
-            rect_width = 60  # Padding for the rectangle
-            rect_height = 50
-            rect_x = timer_rect.left -8   # 5 pixels padding on left
-            rect_y = timer_rect.top -10  # 5 pixels padding on top
+            timer_rect = timer_surface.get_rect(left=W // 2 + 450 + 300, top = H - 75 - 85)
+            rect_width = 100  # Padding for the rectangle
+            rect_height = 100
+            rect_x = timer_rect.left - 5   # 5 pixels padding on left
+            rect_y = timer_rect.top - 15 # 5 pixels padding on top
             
             # Draw the rectangle
             pygame.draw.rect(screen, (0, 0, 0), (rect_x - 2, rect_y - 2, rect_width + 2 * 2, rect_height + 2 * 2))
@@ -182,6 +185,10 @@ while running:
             pygame.draw.rect(screen, PINK_RGB, (rect_x, rect_y, rect_width, rect_height))
             
             screen.blit(timer_surface, timer_rect)
+            if remaining_time == 0:
+                timer_active = False
+                dudu_sound.play()
+                tic_sound.stop()
 
         draw_scores(screen, scores, current_polygon_index, border_index)
         

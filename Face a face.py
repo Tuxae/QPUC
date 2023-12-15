@@ -184,6 +184,8 @@ pause = False
 timer_paused_at = 0 
 mixer.init()
 tic_sound = mixer.Sound("sounds/Tic.wav")
+dudu_sound = pygame.mixer.Sound('sounds/Dudu.wav')
+
 while True:
     clock.tick(FPS)
     current_time = pygame.time.get_ticks()  # Current time in milliseconds
@@ -197,30 +199,26 @@ while True:
             if event.key == pygame.K_i and not timer_active:
                     timer_start = current_time
                     timer_active = True
+                    tic_sound.play(loops=-1)  # Play tic sound when timer starts
             if event.key == pygame.K_q:
                     left = [True, False, True, False]
             if event.key == pygame.K_d:
                     left = [False, True, False, True]
 
             if timer_active:
-                if not tic_sound.get_num_channels():  # Play only if not already playing
-                    tic_sound.play(loops=-1)  # -1 means loop indefinitely
                 if event.key == pygame.K_SPACE and not pause:
                     pause = not pause
                     if pause:
                         timer_paused_at = current_time
+                        tic_sound.stop()  # Stop tic sound when timer is paused
                 if pause:
-                    tic_sound.stop()  # Stop the sound if the timer is not active
                     pass
                 if not pause:
-                    if not tic_sound.get_num_channels():  # Play only if not already playing
-                        tic_sound.play(loops=-1)  # -1 means loop indefinitely
                     remaining_time = timer_duration - (current_time - timer_start) / 1000
                 if remaining_time <= 0:
                     timer_active = False
-                    mixer.music.load("sounds/Dudu.wav")
-                    mixer.music.play()
-                    tic_sound.stop()  # Stop the sound if the timer is not active
+                    tic_sound.stop()  # Stop tic sound when timer ends
+                    dudu_sound.play() # Play dudu sound when timer ends
 
                 i = [in_interval(remaining_time, intervals[i]) for i in range(4)].index(True)
                 if left[i] and pause:
@@ -238,6 +236,7 @@ while True:
                             else:
                                 break
                         pause = False
+                        tic_sound.play(loops=-1)  # Play tic sound when timer resumes
 
                 elif not left[i] and pause:
                     if event.key == pygame.K_o:
@@ -254,16 +253,17 @@ while True:
                                 left[j] = True 
                             else:
                                 break
-                        pause = False       
-            else:
-                tic_sound.stop() 
+                        pause = False     
+                        tic_sound.play(loops=-1)  # Play tic sound when timer resumes  
+            if not timer_active:
+                tic_sound.stop()
 
 
     draw_player_zone(screen, score[0], i=0)
     draw_player_zone(screen, score[1], i=3)
     if not timer_active:
             screen.fill(BLUE_RGB)
-            write_title(screen, "Question pour un champion", TITLE_SIZE/2)
+            write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
             write_title(screen, "Face à face", 3*TITLE_SIZE/2)
             draw_player_zone(screen, score[0], i=0)
             draw_player_zone(screen, score[1], i=3)
