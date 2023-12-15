@@ -123,24 +123,6 @@ def draw_progress_bar(screen, x, y, size, fill_percentage):
     pygame.draw.polygon(screen, BLUE_RGB, bottom_left_triangle)
     pygame.draw.polygon(screen, BLUE_RGB, bottom_right_triangle)
 
-
-def draw_player_zone(screen, score, i=0):
-    pygame.draw.rect(
-        screen, 
-        POWDER, 
-        pygame.Rect(
-            PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG), 
-            5*TITLE_SIZE/2, 
-            PLAYER_LONG, 
-            H-5*TITLE_SIZE/2-PLAYER_BORDER
-        )
-    )
-    draw_hexagon(screen, 
-                 PLAYER_BORDER + i*(PLAYER_BORDER+PLAYER_LONG) + PLAYER_LONG//4 + 10, H - 500)
-    text_surface = TEXT_FONT.render(str(score), False, SEASHELL_RGB)
-    text_rect = text_surface.get_rect(center=(PLAYER_BORDER+ i*(PLAYER_BORDER+PLAYER_LONG) + PLAYER_LONG//2, H - 120))
-    screen.blit(text_surface, text_rect)
-
 def draw_score(screen, i, val=0):
     hexagon_width = W/10
     color = GOLD_RGB
