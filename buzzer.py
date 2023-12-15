@@ -55,7 +55,7 @@ class SuperArduino:
             Buzzer(7, 10, 3, self.board, f"Buzzer {3}")
         ]
         mixer.init()
-        mixer.music.load("sounds/buzzer_bip_qpuc.wav")
+        self.buzzer_sound = mixer.Sound("sounds/buzzer_bip_qpuc.wav")
 
     def get_value(self, turn_on=True):
         if turn_on:
@@ -80,7 +80,7 @@ class SuperArduino:
             return None
         else:
             if play_sound:
-                mixer.music.play()
+                self.buzzer_sound.play()
             return np.argmax(liste)
 
         
