@@ -6,8 +6,8 @@ from buzzer import SuperArduino, ShadowSuperArduino
 Ceci est le code pour le 9 points gagnants
 
 """
-# super_arduino = SuperArduino('/dev/cu.usbmodem14112101')
-super_arduino = ShadowSuperArduino('COM3')
+super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
+# super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
 
 
 # Liste de joueurs à changer si besoin

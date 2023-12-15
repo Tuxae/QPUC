@@ -6,8 +6,8 @@ import math
 from pygame import mixer
 # Initialize Pygame
 pygame.init()
-# super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
-super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
+super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
+# super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
     
 
 # Liste de joueurs à changer si besoin
