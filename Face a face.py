@@ -189,11 +189,13 @@ super_arduino.turn_on_buzzer([False, False, False, False])
 while True:
     clock.tick(FPS)
     current_time = pygame.time.get_ticks()  # Current time in milliseconds
-    res = super_arduino.get_winner(turn_on=False)
     if timer_active:
+        
         if pause:
             pass
         if not pause:
+            res = super_arduino.get_winner(turn_on=False)
+
             remaining_time = timer_duration - (current_time - timer_start) / 1000
         if remaining_time <= 0:
             timer_active = False
@@ -219,25 +221,26 @@ while True:
                 if pause:
                     timer_paused_at = current_time
                     tic_sound.stop()
-
+                    
     for event in pygame.event.get():
+        print(timer_active)
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 timer_active = False
+                pause = False
             if event.key == pygame.K_i and not timer_active:
                     timer_start = current_time
                     timer_active = True
                     tic_sound.play(loops=-1)  # Play tic sound when timer starts
             if event.key == pygame.K_q:
                     left = [True, False, True, False]
-                    print(left)
             
             if event.key == pygame.K_d:
                     left = [False, True, False, True]
-                    print(left)
             if timer_active:
+                        
                         if left[i] and pause:
                             if event.key == pygame.K_o:
                                 timer_start = timer_start + current_time - timer_paused_at

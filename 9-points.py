@@ -143,7 +143,7 @@ for i in range(4):
 while True:
     clock.tick(FPS)
     if on_game:
-        res = super_arduino.get_winner()
+        res = super_arduino.get_winner(turn_on=False)
         if res is not None:
             liste = [False for i in range(4)]
             liste[res] = True

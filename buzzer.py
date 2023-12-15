@@ -19,10 +19,8 @@ class Buzzer:
 
     def get_analog_value(self):
         if not self.buzzer_is_on:
-            print(f"Buzzer off {self.name}")
             return 0
         if self.light_is_on:
-            print(f"Buzzer light on {self.name}")
             return 0
         return self.board.analog[self.analog_pin].read()
     
