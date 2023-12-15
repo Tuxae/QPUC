@@ -6,18 +6,29 @@ from buzzer import SuperArduino, ShadowSuperArduino
 Ceci est le code pour le 9 points gagnants
 
 """
-super_arduino = SuperArduino('/dev/cu.usbmodem14112101')
-#super_arduino = ShadowSuperArduino('COM3')
+# super_arduino = SuperArduino('/dev/cu.usbmodem14112101')
+super_arduino = ShadowSuperArduino('COM3')
+
+
+# Liste de joueurs à changer si besoin
+LISTE_JOUEURS = [
+    ("Camille", "images/Camille.jpg"),
+    ("Cyril", "images/profrouge.jpg"),
+    ("Thibault", "images/profrouge.jpg"),
+    ("Daniel", "images/Daniel.jpg")
+]
 
 successes, failures = pygame.init()
 print("{0} successes and {1} failures".format(successes, failures))
 
+# Taille d'écran           
 W = 1920
 H = 1080
 
 TITLE_SIZE = H//12
 
 GAME_FONT = pygame.font.SysFont('Comic Sans MS', TITLE_SIZE)
+SCORE_FONT = pygame.font.SysFont('Comic Sans MS', int(TITLE_SIZE*0.5))
 screen = pygame.display.set_mode((W, H))
 PLAYER_BORDER = H*0.06
 PLAYER_LONG = (W - 5*PLAYER_BORDER)/4
@@ -79,7 +90,8 @@ def draw_player_zone(screen, i=0):
     )
     angle = 0
     target_width = PLAYER_LONG-1*PLAYER_BORDER
-    img = pygame.image.load("images/profrouge.jpg").convert()
+    name, img_src = LISTE_JOUEURS[i]
+    img = pygame.image.load(img_src).convert()
     rect = img.get_rect()
     scale = target_width / rect.width
     img = pygame.transform.rotozoom(img, angle, scale)
@@ -90,6 +102,13 @@ def draw_player_zone(screen, i=0):
             5*TITLE_SIZE/2+0.5*PLAYER_BORDER
         )
     )
+    x = PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2
+    hexagon_width = W/10
+    y = H-2*PLAYER_BORDER-1*hexagon_width/4
+    text_qpuc = SCORE_FONT.render(name, False, BLUE_RGB)
+    text_rect = text_qpuc.get_rect(center=(x, y))
+    screen.blit(text_qpuc, text_rect)
+
 
 def draw_score(screen, i, val=0, is_on=0):
     hexagon_width = W/10
@@ -118,7 +137,7 @@ def draw_score(screen, i, val=0, is_on=0):
     x = PLAYER_BORDER+i*(PLAYER_BORDER+PLAYER_LONG)+PLAYER_LONG/2
     hexagon_width = W/10
     y = H-2*PLAYER_BORDER-3*hexagon_width/4
-    text_qpuc = GAME_FONT.render(str(val), False, SEASHELL_RGB)
+    text_qpuc = SCORE_FONT.render(str(val), False, SEASHELL_RGB)
     text_rect = text_qpuc.get_rect(center=(x, y))
     screen.blit(text_qpuc, text_rect)
 
