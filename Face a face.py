@@ -1,12 +1,13 @@
 import pygame
 import pygame.gfxdraw
 from constants import *
-from buzzer import SuperArduino
+from buzzer import SuperArduino, ShadowSuperArduino
 import math
 from pygame import mixer
 # Initialize Pygame
 pygame.init()
-super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
+# super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
+super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
                                
 W = 1920
 H = 1080
