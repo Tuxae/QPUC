@@ -6,9 +6,12 @@ from constants import *
 pygame.init()
 W = 1920
 H = 1080
+
 # Initialize the font module after Pygame initialization
-TITTLE_FONT = pygame.font.SysFont('Comic Sans MS', H//12)
-GAME_FONT = pygame.font.SysFont('futura', H // 24)
+TITLE_SIZE = H//12
+PLAYER_BORDER = H*0.06
+TITTLE_FONT = pygame.font.SysFont('Comic Sans MS', TITLE_SIZE)
+GAME_FONT = pygame.font.SysFont('futura', TITLE_SIZE // 2)
 
 def write_title(screen, title, y_pos):
     text_qpuc = TITTLE_FONT.render(title, False, SEASHELL_RGB)
@@ -145,6 +148,20 @@ while running:
     screen.fill(BLUE_RGB)
     write_title(screen, "Questions pour un champion", (H//12)/2)
     write_title(screen, "Quatre à la suite", 3*(H//12)/2)
+    # Affichage Logo
+    target_heigth = TITLE_SIZE*2
+
+    img_src = "images/ENSAE2.png"
+    img = pygame.image.load(img_src).convert_alpha()
+    rect = img.get_rect()
+    img = pygame.transform.rotozoom(img, 0, target_heigth/rect.height)
+    screen.blit(img, (PLAYER_BORDER, PLAYER_BORDER//2))
+
+    img_src = "images/TUXAE.png"
+    img = pygame.image.load(img_src).convert_alpha()
+    rect = img.get_rect()
+    img = pygame.transform.rotozoom(img, 0, target_heigth/rect.height)
+    screen.blit(img, (W - PLAYER_BORDER-img.get_width(), PLAYER_BORDER//2))
     if menu_screen:
         max_text_width = max(GAME_FONT.size(item)[0] for item in menu_items) + 900
         max_text_height = GAME_FONT.size(max(menu_items, key=len))[1] + 40

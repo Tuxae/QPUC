@@ -155,6 +155,21 @@ screen.fill(BLUE_RGB)
 write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
 write_title(screen, "9 points gagnants", 3*TITLE_SIZE/2)
 
+# Affichage Logo
+target_heigth = TITLE_SIZE*2
+
+img_src = "images/ENSAE2.png"
+img = pygame.image.load(img_src).convert_alpha()
+rect = img.get_rect()
+img = pygame.transform.rotozoom(img, 0, target_heigth/rect.height)
+screen.blit(img, (PLAYER_BORDER, PLAYER_BORDER//2))
+
+img_src = "images/TUXAE.png"
+img = pygame.image.load(img_src).convert_alpha()
+rect = img.get_rect()
+img = pygame.transform.rotozoom(img, 0, target_heigth/rect.height)
+screen.blit(img, (W - PLAYER_BORDER-img.get_width(), PLAYER_BORDER//2))
+
 for i in range(4):
     draw_player_zone(screen, i=i)
     draw_score(screen, i, val=liste_score[i])

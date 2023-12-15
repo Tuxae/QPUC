@@ -218,10 +218,26 @@ def in_interval(item,list):
      return list[0] < item <= list[1]
 
 
+def affiche_logo(screen):
+    # Affichage Logo
+    target_heigth = TITLE_SIZE*2
+
+    img_src = "images/ENSAE2.png"
+    img = pygame.image.load(img_src).convert_alpha()
+    rect = img.get_rect()
+    img = pygame.transform.rotozoom(img, 0, target_heigth/rect.height)
+    screen.blit(img, (PLAYER_BORDER, PLAYER_BORDER//2))
+
+    img_src = "images/TUXAE.png"
+    img = pygame.image.load(img_src).convert_alpha()
+    rect = img.get_rect()
+    img = pygame.transform.rotozoom(img, 0, target_heigth/rect.height)
+    screen.blit(img, (W - PLAYER_BORDER-img.get_width(), PLAYER_BORDER//2))
+
 screen.fill(BLUE_RGB)
 write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
 write_title(screen, "Face à face", 3*TITLE_SIZE/2)
-
+affiche_logo(screen)
 
 score = [0, 0]
 points = [4, 3, 2, 1]
@@ -339,6 +355,7 @@ while True:
             screen.fill(BLUE_RGB)
             write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
             write_title(screen, "Face à face", 3*TITLE_SIZE/2)
+            affiche_logo(screen)
             pygame.draw.rect(
                 screen, 
                 GOLD, 
@@ -376,6 +393,7 @@ while True:
         screen.fill(BLUE_RGB)
         write_title(screen, "Questions pour un champion", TITLE_SIZE/2)
         write_title(screen, "Face à face", 3*TITLE_SIZE/2)
+        affiche_logo(screen)
         draw_player_zone(screen, score[0], i=0)
         draw_player_zone(screen, score[1], i=3)
         pygame.draw.rect(
