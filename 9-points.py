@@ -6,16 +6,16 @@ from buzzer import SuperArduino, ShadowSuperArduino
 Ceci est le code pour le 9 points gagnants
 
 """
-super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
-# super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
+# super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
+super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
 
 
 # Liste de joueurs à changer si besoin
 LISTE_JOUEURS = [
-    ("Camille", "images/Camille.jpg"),
-    ("Cyril", "images/profrouge.jpg"),
-    ("Thibault", "images/profrouge.jpg"),
-    ("Daniel", "images/Daniel.jpg")
+    ("Emile", "images/Emile.jpg"),
+    ("Quentin", "images/Quentin.jpg"),
+    ("Daniel", "images/Daniel.jpg"),
+    ("Camille", "images/Camille.jpg")
 ]
 
 successes, failures = pygame.init()
