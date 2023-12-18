@@ -6,7 +6,7 @@ import math
 from pygame import mixer
 # Initialize Pygame
 pygame.init()
-super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
+super_arduino = SuperArduino("/dev/cu.usbmodem1413101")
 # super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
     
 
@@ -252,7 +252,7 @@ timer_paused_at = 0
 mixer.init()
 tic_sound = mixer.Sound("sounds/Tic.wav")
 dudu_sound = pygame.mixer.Sound('sounds/Dudu.wav')
-
+dun_sound = pygame.mixer.Sound('sounds/Dun.wav')
 super_arduino.turn_on_buzzer([False, False, False, False])
 while True:
     clock.tick(FPS)
@@ -314,6 +314,7 @@ while True:
                                 score[0] += points[i]
                                 timer_active = False
                                 pause = False
+                                dun_sound.play()
                             elif event.key == pygame.K_p:
                                 timer_start = timer_start + current_time - timer_paused_at
                                 left[i] = False
@@ -331,7 +332,7 @@ while True:
                                 score[1] += points[i]
                                 timer_active = False
                                 pause = False
-
+                                dun_sound.play()
                             elif event.key == pygame.K_p: 
                                 timer_start = timer_start + current_time - timer_paused_at
                                 left[i] = True
