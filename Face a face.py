@@ -12,10 +12,10 @@ super_arduino = SuperArduino("/dev/cu.usbmodem1413101")
 
 # Liste de joueurs à changer si besoin
 LISTE_JOUEURS = [
-    ("Camille", "images/Camille.jpg"),
-    ("Cyril", "images/profrouge.jpg"),
-    ("Thibault", "images/profrouge.jpg"),
-    ("Daniel", "images/Daniel.jpg")
+    ("Emile", "images/Emile.jpg"),
+    ("Quentin", "images/Quentin.jpg"),
+    ("Daniel", "images/Daniel.jpg"),
+    ("Camille", "images/Camille.jpg")
 ]
 
 # Taille d'écran                           

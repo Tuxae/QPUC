@@ -143,11 +143,11 @@ while running:
                         if current_polygon_index < len(scores) - 1:
                             current_polygon_index = len(scores) - 1
 
-                    elif event.key == pygame.K_ESCAPE:
-                        # Go back to the menu screen if Escape is pressed
-                        menu_screen = True
-                        timer_active = False
-                        tic_sound.stop()
+                if event.key == pygame.K_ESCAPE:
+                    # Go back to the menu screen if Escape is pressed
+                    menu_screen = True
+                    timer_active = False
+                    tic_sound.stop()
 
     # Clear the screen
     screen.fill(BLUE_RGB)

@@ -6,8 +6,8 @@ from buzzer import SuperArduino, ShadowSuperArduino
 Ceci est le code pour le 9 points gagnants
 
 """
-# super_arduino = SuperArduino("/dev/cu.usbmodem14112101")
-super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
+super_arduino = SuperArduino("/dev/cu.usbmodem1413101")
+#super_arduino = ShadowSuperArduino("/dev/cu.usbmodem14112101")
 
 
 # Liste de joueurs à changer si besoin
@@ -29,7 +29,7 @@ TITLE_SIZE = H//12
 
 GAME_FONT = pygame.font.SysFont('Comic Sans MS', TITLE_SIZE)
 SCORE_FONT = pygame.font.SysFont('Comic Sans MS', int(TITLE_SIZE*0.5))
-screen = pygame.display.set_mode((W, H))
+screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN | pygame.SCALED)
 PLAYER_BORDER = H*0.06
 PLAYER_LONG = (W - 5*PLAYER_BORDER)/4
 # 720 / 4 180
