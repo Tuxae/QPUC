@@ -1,7 +1,7 @@
 import pygame
 import pygame.gfxdraw
 from constants import *
-
+from pygame import mixer
 # Initialize Pygame
 pygame.init()
 W = 1920
@@ -65,7 +65,7 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
         screen.blit(text_surface, text_rect)
 
     # Draw the name of the selected menu item at the bottom
-    is_last_menu = selected_index == len(menu_items) - 1
+    is_last_menu = (selected_index == len(menu_items) - 1)
     i = selected_index
     rect_height = max_text_height
     start_menu_y = 900 
@@ -78,7 +78,7 @@ def draw_scores(screen, scores, current_polygon_index, border_index, x=0, y=0):
     font = GAME_FONT
     text_color = SEASHELL_RGB
     outline_color = (0, 0, 0)
-    item = "Attaque et défense chez les animaux" if i == len(menu_items) - 1 else menu_items[i]
+    item = "Mystérieux et paranormal" if i == len(menu_items) - 1 else menu_items[i]
     draw_outlined_text(font, item, text_color, outline_color, (W // 2, rect_top + rect_height // 2))
 
 
@@ -87,7 +87,7 @@ screen = pygame.display.set_mode((W, H), pygame.FULLSCREEN | pygame.SCALED)
 pygame.display.set_caption('Menu and Polygons Screen')
 
 # Menu items
-menu_items = ["Le chant dans le monde", "Sainteté et canonisation", "Traditions du Pays basque", "Thème mystère"]
+menu_items = ["Donner du sens aux données", "Les rotations en science", "L'éxécutif sous la Ve république", "Thème mystère"]
 selected_items = [False, False, False, False]
 
 # Scores for each polygon
@@ -107,7 +107,8 @@ timer_duration = 40  # Duration of the timer in seconds
 # Load sound files
 tic_sound = pygame.mixer.Sound('sounds/tic.wav')
 dudu_sound = pygame.mixer.Sound('sounds/Dudu.wav')
-
+dun_sound = pygame.mixer.Sound('sounds/Dun.wav')
+dundundun_sound = pygame.mixer.Sound('sounds/DunDunDun.wav')
 while running:
     current_time = pygame.time.get_ticks()  # Current time in milliseconds
     for event in pygame.event.get():
@@ -133,6 +134,9 @@ while running:
                         if current_polygon_index > 0:
                             if border_index == 4 - current_polygon_index:
                                 border_index += 1
+                                dun_sound.play()
+                            if border_index == 4:
+                                dundundun_sound.play()
                             current_polygon_index -= 1
 
                     elif event.key == pygame.K_p:
@@ -143,6 +147,7 @@ while running:
                         # Go back to the menu screen if Escape is pressed
                         menu_screen = True
                         timer_active = False
+                        tic_sound.stop()
 
     # Clear the screen
     screen.fill(BLUE_RGB)
@@ -173,8 +178,8 @@ while running:
             start_menu_y = (1080 - len(menu_items) * rect_height - (len(menu_items) - 1) * vertical_gap) // 2
 
             rect_top = start_menu_y + i * (rect_height + vertical_gap)
-            rect_color = ORANGE_RGB if selected_items[i] else GREEN_RGB if is_last_menu else ORANGE_RGB
-            rect_border_color = ORANGE_RGB if selected_items[i] else GREEN_RGB if is_last_menu else ORANGE_RGB
+            rect_color = (ORANGE_RGB if not is_last_menu else GREEN_RGB) if not selected_items[i] else SATO_RGB
+            rect_border_color = (ORANGE_RGB if not is_last_menu else GREEN_RGB) if not selected_items[i] else SATO_RGB
 
             draw_rounded_rect(screen, pygame.Rect(1920 // 2 - max_text_width // 2, rect_top, max_text_width, rect_height),
             
@@ -190,7 +195,7 @@ while running:
             remaining_time = max(timer_duration - int(time_elapsed), 0)  # Calculate remaining time
             timer_text = f"{remaining_time} s"
             timer_surface = GAME_FONT.render(timer_text, True, SEASHELL_RGB)
-            timer_rect = timer_surface.get_rect(left=W // 2 + 450 + 300, top = H - 75 - 85)
+            timer_rect = timer_surface.get_rect(left=W // 2 + 450 + 300 + 50, top = H - 75 - 85)
             rect_width = 100  # Padding for the rectangle
             rect_height = 100
             rect_x = timer_rect.left - 5   # 5 pixels padding on left
